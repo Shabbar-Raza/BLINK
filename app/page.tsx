@@ -1,5 +1,11 @@
-import BLINKHomepage from '@/components/BLINKHomepage';
+'use client';
+
+import BlinkHomePreview from '@/components/BLINKHomepage';
 
 export default function Home() {
-  return <BLINKHomepage />;
+  return (
+    <main>
+      <BlinkHomePreview />
+    </main>
+  );
 }

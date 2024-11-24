@@ -1,194 +1,261 @@
-'use client'; // Add this at the top for Next.js 13+
+'use client';
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 const BlinkHomePreview = () => {
-  const [subjects] = useState([
-    { id: 1, name: 'Physics', icon: '⚡' },
-    { id: 2, name: 'Statistics', icon: '📈' },
-    { id: 3, name: 'Chemistry', icon: '🧪' },
-  ]);
-
+  const router = useRouter();
+  const [showQuickActions, setShowQuickActions] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useTheme();
+  
   const [courses] = useState([
     {
       id: 1,
-      title: 'AP/College ',
-      bgColor: 'from-purple-600 to-orange-500',
-      icon: '📊',
-      progress: 45,
+      title: 'AP Physics',
+      progress: 60,
+      icon: '⚡',
+      bgColor: 'bg-gradient-to-br from-purple-500 to-pink-500',
+      notesPage: '/physics/notes'
     },
     {
       id: 2,
-      title: 'AP/College Macroeconomics',
-      bgColor: 'from-teal-600 to-yellow-400',
-      icon: '🌍',
-      progress: 30,
+      title: 'Precalculus',
+      progress: 45,
+      icon: '📐',
+      bgColor: 'bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500',
+      notesPage: '/precalculus'
     },
     {
       id: 3,
-      title: 'AP Physics',
-      bgColor: 'from-blue-500 to-purple-500',
-      icon: '⚡',
-      progress: 60,
-    },
+      title: 'AP/College Macroeconomics',
+      progress: 30,
+      icon: '🌍',
+      bgColor: 'bg-gradient-to-br from-orange-500 to-yellow-500',
+      notesPage: '/courses/macroeconomics'
+    }
   ]);
 
   const [recentTopics] = useState([
     {
       id: 1,
-      title: 'Derivatives',
-      subject: 'Calculus BC',
+      title: 'Two-dimensional Motion',
+      subject: 'AP Physics',
       lastOpened: '2 hours ago',
-      icon: '📈',
+      icon: '⚡',
+      link: '/physics/two-dimensional-motion'
     },
     {
       id: 2,
+      title: 'Derivatives',
+      subject: 'Calculus BC',
+      lastOpened: '5 hours ago',
+      icon: '📈'
+    },
+    {
+      id: 3,
       title: 'Supply and Demand',
       subject: 'Macroeconomics',
       lastOpened: '5 hours ago',
-      icon: '📊',
-    },
+      icon: '📊'
+    }
   ]);
 
-  return (
-    <div className="w-full h-screen bg-white overflow-hidden flex flex-col">
-      {/* Status Bar */}
-      <div className="bg-white p-2 flex justify-between items-center text-xs text-gray-600 border-b">
-        <div>4:25</div>
-        <div className="flex items-center gap-3">
-          <span>27.0 KB/s</span>
-          <span>74%</span>
-        </div>
-      </div>
+  const [subjects] = useState([
+    { id: 1, name: 'Physics', icon: '⚡' },
+    { id: 2, name: 'Statistics', icon: '📈' },
+    { id: 3, name: 'Chemistry', icon: '🧪' }
+  ]);
 
+  const QuickActionMenu = () => (
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+        onClick={() => setShowQuickActions(false)}
+      />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 100 }}
+        className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl shadow-xl p-4 flex gap-4 z-50"
+      >
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex flex-col items-center"
+          onClick={() => {
+            setShowQuickActions(false);
+            router.push('/create-course');
+          }}
+        >
+          <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center mb-1">
+            <span className="text-2xl">📚</span>
+          </div>
+          <span className="text-xs">Course</span>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex flex-col items-center"
+        >
+          <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mb-1">
+            <span className="text-2xl">📝</span>
+          </div>
+          <span className="text-xs">Notes</span>
+        </motion.button>
+      </motion.div>
+    </>
+  );
+
+  return (
+    <div className={`w-full h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} overflow-hidden flex flex-col relative`}>
       {/* Header */}
-      <div className="p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Home</h1>
+      <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} p-4 flex justify-between items-center sticky top-0 z-10 border-b`}>
+        <h1 className={`text-xl font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Home
+        </h1>
         <div className="flex gap-3">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <Link href="/chat">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="w-10 h-10 bg-emerald-100 rounded-2xl flex items-center justify-center"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
-          </motion.button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 text-emerald-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+            </motion.button>
+          </Link>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-4">
         {/* My Courses Section */}
-        <div className="p-4">
+        <div className="py-4">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">My Courses</h2>
+            <h2 className="text-lg font-medium">My Courses</h2>
             <motion.button
               whileTap={{ scale: 0.95 }}
-              className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center"
+              className="w-8 h-8 bg-emerald-100 rounded-2xl flex items-center justify-center"
             >
-              <span className="text-xl text-gray-600">+</span>
+              <span className="text-xl text-emerald-600">+</span>
             </motion.button>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-4">
+          <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4">
             {courses.map((course) => (
-              <motion.div
-                key={course.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="flex-shrink-0 w-48"
+              <Link 
+                key={course.id} 
+                href={course.notesPage}
+                className="flex-shrink-0 w-44"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push(course.notesPage);
+                }}
               >
-                <div
-                  className={`h-48 bg-gradient-to-br ${course.bgColor} rounded-xl relative mb-2 p-4`}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`h-44 ${course.bgColor} rounded-2xl relative p-4 cursor-pointer`}
                 >
                   <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm text-white">
                     {course.progress}%
                   </div>
-                  <div className="absolute bottom-2 right-2 text-3xl">
+                  <div className="absolute bottom-2 right-2 text-2xl">
                     {course.icon}
                   </div>
-                  <div className="absolute bottom-2 left-2 text-white font-medium">
+                  <div className="absolute bottom-2 left-2 text-white font-medium text-sm">
                     {course.title}
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
 
         {/* Recently Opened Section */}
-        <div className="p-4">
-          <h2 className="text-xl font-bold mb-4">Recently Opened</h2>
-          <div className="space-y-3">
+        <div className="px-6 mt-8">
+          <h2 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            Recent Topics
+          </h2>
+          <div className="space-y-2">
             {recentTopics.map((topic) => (
-              <motion.div
+              <Link
                 key={topic.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                whileHover={{ scale: 1.02 }}
-                className="bg-gray-50 rounded-xl p-4 flex items-center justify-between"
+                href={topic.link || '#'}
+                className={`block py-2 px-3 rounded-xl ${
+                  isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
+                } shadow-sm transition-colors w-full`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                    <span className="text-xl">{topic.icon}</span>
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{topic.title}</h3>
-                    <p className="text-sm text-gray-500">{topic.subject}</p>
+                  <span className="text-lg">{topic.icon}</span>
+                  <div className="flex-1">
+                    <h3 className={`font-medium text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {topic.title}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {topic.subject} • {topic.lastOpened}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <span className="text-xs text-gray-400">
-                  {topic.lastOpened}
-                </span>
-              </motion.div>
+              </Link>
             ))}
           </div>
         </div>
 
         {/* My Problems Section */}
-        <div className="p-4">
+        <div className="py-4">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">My Problems</h2>
+            <h2 className="text-lg font-medium">My Problems</h2>
             <motion.button
               whileTap={{ scale: 0.95 }}
-              className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center"
+              className="w-8 h-8 bg-emerald-100 rounded-2xl flex items-center justify-center"
             >
-              <span className="text-xl text-gray-600">+</span>
+              <span className="text-xl text-emerald-600">+</span>
             </motion.button>
           </div>
 
-          <div className="bg-gray-50 rounded-xl p-4 mb-4">
+          <div className="bg-emerald-100 rounded-2xl p-4 mb-4">
             <div className="flex items-center">
-              <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center mr-2">
-                <span className="text-gray-600">+</span>
+              <div className="w-6 h-6 bg-white rounded-xl flex items-center justify-center mr-2">
+                <span className="text-emerald-600">+</span>
               </div>
-              <span className="text-gray-600">Get homework help</span>
+              <span className="text-sm text-gray-600">Get homework help</span>
             </div>
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-4">
+          <div className="flex gap-2 overflow-x-auto pb-4 -mx-4 px-4">
             {subjects.map((subject) => (
               <motion.div
                 key={subject.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center bg-gray-100 px-4 py-2 rounded-full whitespace-nowrap"
+                className="flex items-center bg-emerald-100 px-4 py-2 rounded-xl whitespace-nowrap"
               >
                 <span className="mr-1">{subject.icon}</span>
-                <span className="text-gray-600">{subject.name}</span>
+                <span className="text-sm text-gray-600">{subject.name}</span>
               </motion.div>
             ))}
           </div>
@@ -196,8 +263,11 @@ const BlinkHomePreview = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="flex justify-around items-center p-4 border-t border-gray-200 bg-white">
-        <motion.button whileTap={{ scale: 0.95 }} className="text-black">
+      <div className={`flex justify-around items-center p-4 border-t ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} relative`}>
+        <motion.button 
+          whileTap={{ scale: 0.95 }} 
+          className={isDarkMode ? 'text-purple-400' : 'text-emerald-600'}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
@@ -213,13 +283,17 @@ const BlinkHomePreview = () => {
             />
           </svg>
         </motion.button>
+
         <motion.button
           whileTap={{ scale: 0.95 }}
-          className="bg-gray-100 rounded-full p-2"
+          className={`${isDarkMode ? 'bg-purple-900/50 text-purple-400' : 'bg-emerald-100 text-emerald-600'} rounded-2xl p-2`}
+          onClick={() => setShowQuickActions(!showQuickActions)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8"
+            className={`h-8 w-8 transition-transform duration-300 text-emerald-600 ${
+              showQuickActions ? 'rotate-45' : ''
+            }`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -232,22 +306,20 @@ const BlinkHomePreview = () => {
             />
           </svg>
         </motion.button>
-        <motion.button whileTap={{ scale: 0.95 }} className="text-gray-600">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
+
+        <motion.button 
+          whileTap={{ scale: 0.95 }} 
+          onClick={toggleDarkMode}
+          className={isDarkMode ? 'text-purple-400' : 'text-emerald-600'}
+        >
+          {isDarkMode ? (
+            <Sun className="h-6 w-6" />
+          ) : (
+            <Moon className="h-6 w-6" />
+          )}
         </motion.button>
+
+        {showQuickActions && <QuickActionMenu />}
       </div>
     </div>
   );
