@@ -1,0 +1,14 @@
+[33m0d185ed[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mgh-pages[m[33m, [m[1;31morigin/gh-pages[m[33m)[m HEAD@{0}: commit: Initial commit for GitHub Pages
+[33m7400843[m[33m ([m[1;31morigin/feature/menu-pages[m[33m, [m[1;32mfeature/menu-pages[m[33m)[m HEAD@{1}: checkout: moving from feature/menu-pages to gh-pages
+[33m7400843[m[33m ([m[1;31morigin/feature/menu-pages[m[33m, [m[1;32mfeature/menu-pages[m[33m)[m HEAD@{2}: checkout: moving from feature/ui-improvements to feature/menu-pages
+[33mc83bd7a[m[33m ([m[1;31morigin/feature/ui-improvements[m[33m, [m[1;32mfeature/ui-improvements[m[33m)[m HEAD@{3}: checkout: moving from feature/menu-pages to feature/ui-improvements
+[33m7400843[m[33m ([m[1;31morigin/feature/menu-pages[m[33m, [m[1;32mfeature/menu-pages[m[33m)[m HEAD@{4}: reset: moving to HEAD
+[33m7400843[m[33m ([m[1;31morigin/feature/menu-pages[m[33m, [m[1;32mfeature/menu-pages[m[33m)[m HEAD@{5}: commit: Add new menu pages:
+[33mc83bd7a[m[33m ([m[1;31morigin/feature/ui-improvements[m[33m, [m[1;32mfeature/ui-improvements[m[33m)[m HEAD@{6}: checkout: moving from feature/ui-improvements to feature/menu-pages
+[33mc83bd7a[m[33m ([m[1;31morigin/feature/ui-improvements[m[33m, [m[1;32mfeature/ui-improvements[m[33m)[m HEAD@{7}: commit: UI Improvements:
+[33mb0401b4[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m HEAD@{8}: checkout: moving from master to feature/ui-improvements
+[33mb0401b4[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m HEAD@{9}: reset: moving to HEAD
+[33mb0401b4[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m HEAD@{10}: commit: Major platform update:
+[33m359ab60[m HEAD@{11}: checkout: moving from master to master
+[33m359ab60[m HEAD@{12}: commit: file add: added quiz and notes pages
+[33m1904965[m HEAD@{13}: clone: from https://github.com/Shabbar-Raza/BLINK.git

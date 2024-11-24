@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Menu, LogOut, Settings, User, AlertTriangle, Heart, Activity, HelpCircle } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const BlinkHomePreview = () => {
   const router = useRouter();
   const [showQuickActions, setShowQuickActions] = useState(false);
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const [courses] = useState([
     {
@@ -115,13 +116,102 @@ const BlinkHomePreview = () => {
     </>
   );
 
+  const Sidebar = () => (
+    <>
+      {/* Simple overlay */}
+      <div 
+        className="fixed inset-0 bg-black/30 z-40"
+        onClick={() => setIsSidebarOpen(false)}
+      />
+      
+      {/* Sidebar */}
+      <div className={`fixed top-0 left-0 h-full w-72 ${
+        isDarkMode ? 'bg-gray-900' : 'bg-white'
+      } shadow-lg z-50`}>
+        {/* Header */}
+        <div className={`p-6 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'} border-b`}>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+              <User className="w-6 h-6 text-emerald-600" />
+            </div>
+            <div>
+              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                Your Name
+              </h3>
+              <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                Student
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Menu Items */}
+        <div className="p-4">
+          <nav className="space-y-1">
+            <Link href="/profile">
+              <div className={`flex items-center gap-3 p-3 rounded-lg ${
+                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
+              } cursor-pointer`}>
+                <User className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <span className={isDarkMode ? 'text-white' : 'text-gray-700'}>Profile</span>
+              </div>
+            </Link>
+
+            <Link href="/settings">
+              <div className={`flex items-center gap-3 p-3 rounded-lg ${
+                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
+              } cursor-pointer`}>
+                <Settings className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <span className={isDarkMode ? 'text-white' : 'text-gray-700'}>Settings</span>
+              </div>
+            </Link>
+
+            <Link href="/help">
+              <div className={`flex items-center gap-3 p-3 rounded-lg ${
+                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
+              } cursor-pointer`}>
+                <HelpCircle className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <span className={isDarkMode ? 'text-white' : 'text-gray-700'}>Help</span>
+              </div>
+            </Link>
+
+            <div 
+              onClick={() => {
+                router.push('/logout');
+                setIsSidebarOpen(false);
+              }}
+              className={`flex items-center gap-3 p-3 rounded-lg ${
+                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
+              } cursor-pointer mt-8`}
+            >
+              <LogOut className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+              <span className={isDarkMode ? 'text-white' : 'text-gray-700'}>Logout</span>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="w-full h-screen flex flex-col relative">
       {/* Header */}
       <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} p-4 flex justify-between items-center sticky top-0 z-10 border-b`}>
-        <h1 className={`text-xl font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Home
-        </h1>
+        <div className="flex items-center gap-3">
+          <motion.button
+            onClick={() => setIsSidebarOpen(true)}
+            className={`p-2 rounded-lg ${
+              isDarkMode 
+                ? 'hover:bg-gray-700 text-white' 
+                : 'hover:bg-gray-100 text-gray-700'
+            }`}
+          >
+            <Menu className="w-6 h-6" />
+          </motion.button>
+          <h1 className={`text-xl font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            Home
+          </h1>
+        </div>
         <div className="flex gap-3">
           <Link href="/chat">
             <motion.button
@@ -323,6 +413,7 @@ const BlinkHomePreview = () => {
       </div>
 
       {showQuickActions && <QuickActionMenu />}
+      {isSidebarOpen && <Sidebar />}
     </div>
   );
 };
