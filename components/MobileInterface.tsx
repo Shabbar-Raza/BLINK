@@ -4,12 +4,10 @@ import Link from 'next/link';
 
 const MobileInterface = () => {
   return (
-    // Phone frame wrapper
-    <div className="max-w-[375px] mx-auto bg-white min-h-[700px] relative rounded-3xl shadow-2xl overflow-hidden">
+    // Remove phone frame wrapper and use full viewport
+    <div className="w-full min-h-screen bg-white relative">
       {/* Main content area */}
       <div className="h-full pb-20">
-        {' '}
-        {/* Added padding bottom to account for fixed footer */}
         {/* Header Section */}
         <div className="p-4">
           <div className="flex justify-between items-center">
@@ -72,8 +70,8 @@ const MobileInterface = () => {
         </div>
       </div>
 
-      {/* Fixed Bottom Navigation - Inside phone frame */}
-      <div className="absolute bottom-0 left-0 right-0 bg-white border-t">
+      {/* Fixed Bottom Navigation - Full width */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
         <div className="flex justify-around p-4">
           <Link href="/home">
             <Home className="h-6 w-6" />

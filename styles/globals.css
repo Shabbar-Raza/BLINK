@@ -1,0 +1,64 @@
+/* Add these animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* Add smooth transitions for all interactive elements */
+button, a {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Smooth page transitions */
+.page-transition {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Smooth scrolling and momentum scroll */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.smooth-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Add animation classes */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-in-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#__next {
+  width: 100%;
+  min-height: 100vh;
+} 

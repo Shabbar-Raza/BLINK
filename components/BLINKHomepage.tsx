@@ -116,7 +116,7 @@ const BlinkHomePreview = () => {
   );
 
   return (
-    <div className={`w-full h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} overflow-hidden flex flex-col relative`}>
+    <div className="w-full h-screen flex flex-col relative">
       {/* Header */}
       <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} p-4 flex justify-between items-center sticky top-0 z-10 border-b`}>
         <h1 className={`text-xl font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -148,7 +148,7 @@ const BlinkHomePreview = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto px-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-20">
         {/* My Courses Section */}
         <div className="py-4">
           <div className="flex justify-between items-center mb-4">
@@ -194,18 +194,18 @@ const BlinkHomePreview = () => {
         </div>
 
         {/* Recently Opened Section */}
-        <div className="px-6 mt-8">
-          <h2 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+        <div className="px-0 mt-8 scroll-snap-align-start">
+          <h2 className={`text-lg font-bold mb-4 px-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             Recent Topics
           </h2>
-          <div className="space-y-2">
+          <div className="space-y-2 px-0.2">
             {recentTopics.map((topic) => (
               <Link
                 key={topic.id}
                 href={topic.link || '#'}
-                className={`block py-2 px-3 rounded-xl ${
+                className={`block py-3 px-5 ${
                   isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
-                } shadow-sm transition-colors w-full`}
+                } rounded-2xl shadow-sm transition-colors w-full`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-lg">{topic.icon}</span>
@@ -263,7 +263,9 @@ const BlinkHomePreview = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <div className={`flex justify-around items-center p-4 border-t ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} relative`}>
+      <div className={`fixed bottom-0 left-0 right-0 flex justify-around items-center p-4 border-t ${
+        isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+      } z-50`}>
         <motion.button 
           whileTap={{ scale: 0.95 }} 
           className={isDarkMode ? 'text-purple-400' : 'text-emerald-600'}
@@ -318,9 +320,9 @@ const BlinkHomePreview = () => {
             <Moon className="h-6 w-6" />
           )}
         </motion.button>
-
-        {showQuickActions && <QuickActionMenu />}
       </div>
+
+      {showQuickActions && <QuickActionMenu />}
     </div>
   );
 };
