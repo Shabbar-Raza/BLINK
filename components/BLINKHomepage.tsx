@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Menu, X, UserCircle, Settings, HelpCircle, LogOut } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const BlinkHomePreview = () => {
   const router = useRouter();
   const [showQuickActions, setShowQuickActions] = useState(false);
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const [courses] = useState([
     {
@@ -115,13 +116,285 @@ const BlinkHomePreview = () => {
     </>
   );
 
+  const Sidebar = () => (
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40"
+        onClick={() => setIsSidebarOpen(false)}
+      />
+      
+      {/* Sidebar */}
+      <motion.div
+        initial={{ x: '-100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '-100%' }}
+        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+        className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50"
+      >
+        {/* Close button */}
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsSidebarOpen(false)}
+          className="absolute top-6 right-6 w-8 h-8 rounded-full bg-gray-100 
+            flex items-center justify-center"
+        >
+          <X className="h-5 w-5 text-gray-600" />
+        </motion.button>
+
+        {/* Profile Section */}
+        <div className="pt-12 px-6">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="bg-gradient-to-br from-emerald-400 to-emerald-500 p-6 rounded-2xl"
+          >
+            <div className="flex items-center gap-4">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm 
+                  flex items-center justify-center"
+              >
+                <UserCircle className="w-10 h-10 text-white" />
+              </motion.div>
+              <div>
+                <h3 className="font-semibold text-white">User Name</h3>
+                <p className="text-sm text-emerald-50">user@example.com</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Menu Items */}
+        <div className="mt-8 px-4">
+          {[
+            { 
+              icon: UserCircle, 
+              label: 'Profile', 
+              href: '/profile',
+              bgColor: 'bg-purple-100',
+              iconColor: 'text-purple-600'
+            },
+            { 
+              icon: Settings, 
+              label: 'Settings', 
+              href: '/settings',
+              bgColor: 'bg-blue-100',
+              iconColor: 'text-blue-600'
+            },
+            { 
+              icon: HelpCircle, 
+              label: 'Help', 
+              href: '/help',
+              bgColor: 'bg-orange-100',
+              iconColor: 'text-orange-600'
+            },
+            { 
+              icon: LogOut, 
+              label: 'Logout', 
+              href: '/logout',
+              bgColor: 'bg-red-100',
+              iconColor: 'text-red-600'
+            },
+          ].map((item) => (
+            <motion.div
+              key={item.label}
+              whileHover={{ x: 5 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Link
+                href={item.href}
+                className="flex items-center gap-4 p-4 rounded-xl mb-2 
+                  hover:bg-gray-50 transition-colors"
+              >
+                <div className={`w-10 h-10 ${item.bgColor} rounded-xl 
+                  flex items-center justify-center`}>
+                  <item.icon className={`w-5 h-5 ${item.iconColor}`} />
+                </div>
+                <span className="font-medium text-gray-700">
+                  {item.label}
+                </span>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Bottom Section */}
+        <div className="absolute bottom-8 left-4 right-4">
+          <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-2xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
+                <span className="text-white text-lg">💡</span>
+              </div>
+              <p className="text-sm text-gray-600">
+                Need help? Check out our guides and tutorials
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </>
+  );
+
   return (
     <div className="w-full h-screen flex flex-col relative">
       {/* Header */}
       <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} p-4 flex justify-between items-center sticky top-0 z-10 border-b`}>
-        <h1 className={`text-xl font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-          Home
-        </h1>
+        <div className="flex items-center gap-4">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsSidebarOpen(true)}
+            className={`w-10 h-10 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-full flex items-center justify-center`}
+          >
+            <Menu className={isDarkMode ? 'text-white' : 'text-gray-800'} />
+          </motion.button>
+          
+          {/* BLINK Logo with Neural Network */}
+          <div className="relative flex items-center">
+            {/* Neural Network Background */}
+            <div className="absolute -left-4 -top-4 w-32 h-16">
+              {/* Neural Nodes */}
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 rounded-full bg-emerald-400"
+                  style={{
+                    left: `${(i % 3) * 40}%`,
+                    top: `${Math.floor(i / 3) * 80}%`,
+                  }}
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.7, 0.3],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.2,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+
+              {/* Neural Connections */}
+              {[...Array(8)].map((_, i) => (
+                <motion.div
+                  key={`line-${i}`}
+                  className="absolute h-[1px] bg-gradient-to-r from-emerald-400/50 to-teal-400/50"
+                  style={{
+                    width: '40%',
+                    left: `${(i % 2) * 30}%`,
+                    top: `${Math.floor(i / 2) * 30}%`,
+                    transform: `rotate(${45 + (i * 45)}deg)`,
+                    transformOrigin: 'left center'
+                  }}
+                  animate={{
+                    opacity: [0.2, 0.5, 0.2],
+                    scaleX: [0.8, 1, 0.8],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.15,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+
+              {/* Data Pulses */}
+              {[...Array(4)].map((_, i) => (
+                <motion.div
+                  key={`pulse-${i}`}
+                  className="absolute w-1 h-1 rounded-full bg-emerald-400"
+                  animate={{
+                    x: [0, 50, 0],
+                    y: [0, 30, 0],
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    delay: i * 0.5,
+                    ease: "easeInOut"
+                  }}
+                  style={{
+                    left: `${(i % 2) * 50}%`,
+                    top: `${Math.floor(i / 2) * 50}%`,
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* BLINK Text */}
+            <motion.h1 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-2xl font-bold z-10"
+            >
+              <span className="relative">
+                {/* Individual letters with neural glow effect */}
+                {'BLINK'.split('').map((letter, index) => (
+                  <motion.span
+                    key={index}
+                    className="inline-block relative bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent"
+                    animate={{
+                      textShadow: [
+                        '0 0 5px rgba(16, 185, 129, 0)',
+                        '0 0 10px rgba(16, 185, 129, 0.3)',
+                        '0 0 5px rgba(16, 185, 129, 0)'
+                      ]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: index * 0.1,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    {letter}
+                  </motion.span>
+                ))}
+                <span className="text-xs font-normal ml-1 text-gray-400">beta</span>
+              </span>
+            </motion.h1>
+
+            {/* Active Node Highlights */}
+            {[...Array(3)].map((_, i) => (
+              <motion.div
+                key={`highlight-${i}`}
+                className="absolute"
+                style={{
+                  top: -4 + (i * 3),
+                  right: -4 + (i * 3),
+                  width: '4px',
+                  height: '4px'
+                }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  scale: [0.8, 1.2, 0.8],
+                  boxShadow: [
+                    '0 0 2px rgba(16, 185, 129, 0.3)',
+                    '0 0 4px rgba(16, 185, 129, 0.6)',
+                    '0 0 2px rgba(16, 185, 129, 0.3)'
+                  ]
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  delay: i * 0.2,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="w-full h-full rounded-full bg-emerald-400" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Rest of header content */}
         <div className="flex gap-3">
           <Link href="/chat">
             <motion.button
@@ -323,6 +596,7 @@ const BlinkHomePreview = () => {
       </div>
 
       {showQuickActions && <QuickActionMenu />}
+      {isSidebarOpen && <Sidebar />}
     </div>
   );
 };
