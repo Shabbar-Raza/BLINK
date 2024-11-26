@@ -16,10 +16,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="w-full min-h-screen">
+      <body 
+        className={`${inter.className} antialiased overflow-y-auto`}
+        style={{ 
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
+        <main className="w-full min-h-screen overflow-y-auto scroll-smooth">
           {children}
-        </div>
+        </main>
       </body>
     </html>
   );

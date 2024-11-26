@@ -1,11 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-const TwoDimensionalMotion = dynamic(() => import('@/components/TwoDimensionalMotion'), {
-  ssr: false
-});
+import PhysicsNotesPage from '@/components/PhysicsNotesPage';
 
 export default function TwoDimensionalMotionPage() {
-  return <TwoDimensionalMotion />;
+  return <PhysicsNotesPage />;
 } 

@@ -2,13 +2,8 @@
 
 // Import any necessary components/dependencies here
 import React from 'react';
+import PhysicsPreview from '@/components/PhysicsPreview';
 
-export default function CreateCoursePage() {
-  return (
-    <div>
-      {/* Add your create course form/content here */}
-      <h1>Create Course</h1>
-      {/* ... rest of your create course component content ... */}
-    </div>
-  );
+export default function PhysicsPage() {
+  return <PhysicsPreview />;
 } 

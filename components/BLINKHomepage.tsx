@@ -1,11 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Moon, Sun, Menu, LogOut, Settings, User, AlertTriangle, Heart, Activity, HelpCircle } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { Archivo_Black } from 'next/font/google';
+
+const archivoBlack = Archivo_Black({ 
+  weight: '400',
+  subsets: ['latin'] 
+});
 
 const BlinkHomePreview = () => {
   const router = useRouter();
@@ -20,7 +26,7 @@ const BlinkHomePreview = () => {
       progress: 60,
       icon: '⚡',
       bgColor: 'bg-gradient-to-br from-purple-500 to-pink-500',
-      notesPage: '/physics/notes'
+      notesPage: '/physics'
     },
     {
       id: 2,
@@ -106,6 +112,10 @@ const BlinkHomePreview = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           className="flex flex-col items-center"
+          onClick={() => {
+            setShowQuickActions(false);
+            router.push('/notes');
+          }}
         >
           <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mb-1">
             <span className="text-2xl">📝</span>
@@ -117,85 +127,218 @@ const BlinkHomePreview = () => {
   );
 
   const Sidebar = () => (
-    <>
-      {/* Simple overlay */}
-      <div 
-        className="fixed inset-0 bg-black/30 z-40"
-        onClick={() => setIsSidebarOpen(false)}
-      />
-      
-      {/* Sidebar */}
-      <div className={`fixed top-0 left-0 h-full w-72 ${
-        isDarkMode ? 'bg-gray-900' : 'bg-white'
-      } shadow-lg z-50`}>
-        {/* Header */}
-        <div className={`p-6 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'} border-b`}>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-              <User className="w-6 h-6 text-emerald-600" />
-            </div>
-            <div>
-              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Your Name
-              </h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Student
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Menu Items */}
-        <div className="p-4">
-          <nav className="space-y-1">
-            <Link href="/profile">
-              <div className={`flex items-center gap-3 p-3 rounded-lg ${
-                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-              } cursor-pointer`}>
-                <User className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                <span className={isDarkMode ? 'text-white' : 'text-gray-700'}>Profile</span>
-              </div>
-            </Link>
-
-            <Link href="/settings">
-              <div className={`flex items-center gap-3 p-3 rounded-lg ${
-                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-              } cursor-pointer`}>
-                <Settings className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                <span className={isDarkMode ? 'text-white' : 'text-gray-700'}>Settings</span>
-              </div>
-            </Link>
-
-            <Link href="/help">
-              <div className={`flex items-center gap-3 p-3 rounded-lg ${
-                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-              } cursor-pointer`}>
-                <HelpCircle className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                <span className={isDarkMode ? 'text-white' : 'text-gray-700'}>Help</span>
-              </div>
-            </Link>
-
-            <div 
-              onClick={() => {
-                router.push('/logout');
-                setIsSidebarOpen(false);
-              }}
-              className={`flex items-center gap-3 p-3 rounded-lg ${
-                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-              } cursor-pointer mt-8`}
+    <AnimatePresence mode="wait">
+      {isSidebarOpen && (
+        <>
+          {/* Backdrop overlay with blur */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+          
+          {/* Enhanced Sidebar */}
+          <motion.div 
+            initial={{ x: "-100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ 
+              x: "-100%",
+              opacity: 0,
+              transition: { 
+                type: "spring",
+                stiffness: 400,
+                damping: 40
+              }
+            }}
+            transition={{ 
+              type: "spring",
+              stiffness: 400,
+              damping: 40
+            }}
+            className={`fixed top-0 left-0 h-full w-80 ${
+              isDarkMode 
+                ? 'bg-gray-900/95 backdrop-blur-lg' 
+                : 'bg-white/95 backdrop-blur-lg'
+            } shadow-2xl z-50 overflow-hidden`}
+          >
+            {/* Header with enhanced design */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className={`p-6 ${
+                isDarkMode ? 'border-gray-800' : 'border-gray-100'
+              } border-b relative`}
             >
-              <LogOut className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-              <span className={isDarkMode ? 'text-white' : 'text-gray-700'}>Logout</span>
-            </div>
-          </nav>
-        </div>
-      </div>
-    </>
+              {/* Close button */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setIsSidebarOpen(false)}
+                className={`absolute right-4 top-4 p-2 rounded-full ${
+                  isDarkMode 
+                    ? 'hover:bg-gray-800 text-gray-400' 
+                    : 'hover:bg-gray-100 text-gray-600'
+                }`}
+              >
+                <svg 
+                  className="w-6 h-6" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M6 18L18 6M6 6l12 12" 
+                  />
+                </svg>
+              </motion.button>
+
+              {/* User Profile Section */}
+              <div className="flex items-center gap-4">
+                <motion.div 
+                  whileHover={{ scale: 1.05 }}
+                  className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg"
+                >
+                  <User className="w-7 h-7 text-white" />
+                </motion.div>
+                <div>
+                  <h3 className={`font-semibold text-lg ${
+                    isDarkMode ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    Your Name
+                  </h3>
+                  <p className={`text-sm ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
+                    Student
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Menu Items with enhanced design */}
+            <motion.nav 
+              initial="closed"
+              animate="open"
+              variants={{
+                open: {
+                  transition: { staggerChildren: 0.08, delayChildren: 0.3 }
+                },
+                closed: {
+                  transition: { staggerChildren: 0.05, staggerDirection: -1 }
+                }
+              }}
+              className="p-4 space-y-2"
+            >
+              {[
+                { href: '/profile', icon: <User />, label: 'Profile' },
+                { href: '/settings', icon: <Settings />, label: 'Settings' },
+                { href: '/help', icon: <HelpCircle />, label: 'Help & Support' },
+                { href: '/activity', icon: <Activity />, label: 'Activity' },
+                { href: '/favorites', icon: <Heart />, label: 'Favorites' },
+              ].map((item, index) => (
+                <motion.div
+                  key={item.href}
+                  variants={{
+                    open: {
+                      x: 0,
+                      opacity: 1,
+                      transition: {
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 24
+                      }
+                    },
+                    closed: {
+                      x: -20,
+                      opacity: 0
+                    }
+                  }}
+                >
+                  <Link href={item.href}>
+                    <motion.div
+                      whileHover={{ 
+                        x: 5,
+                        transition: { type: "spring", stiffness: 400 }
+                      }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`flex items-center gap-3 p-3 rounded-xl ${
+                        isDarkMode 
+                          ? 'hover:bg-gray-800/80 hover:text-emerald-400' 
+                          : 'hover:bg-gray-50 hover:text-emerald-600'
+                      } cursor-pointer transition-colors`}
+                    >
+                      <span className={`w-5 h-5 ${
+                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                      }`}>
+                        {item.icon}
+                      </span>
+                      <span className={`${
+                        isDarkMode ? 'text-gray-100' : 'text-gray-700'
+                      } font-medium`}>
+                        {item.label}
+                      </span>
+                    </motion.div>
+                  </Link>
+                </motion.div>
+              ))}
+
+              {/* Logout button with enhanced design */}
+              <motion.div
+                variants={{
+                  open: {
+                    x: 0,
+                    opacity: 1,
+                    transition: {
+                      delay: 0.4,
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 24
+                    }
+                  },
+                  closed: {
+                    x: -20,
+                    opacity: 0
+                  }
+                }}
+                className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-800"
+              >
+                <motion.div 
+                  whileHover={{ 
+                    x: 5,
+                    transition: { type: "spring", stiffness: 400 }
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    router.push('/logout');
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`flex items-center gap-3 p-3 rounded-xl ${
+                    isDarkMode 
+                      ? 'hover:bg-red-500/10 text-red-400' 
+                      : 'hover:bg-red-50 text-red-600'
+                  } cursor-pointer transition-colors`}
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span className="font-medium">Logout</span>
+                </motion.div>
+              </motion.div>
+            </motion.nav>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 
   return (
     <div className="w-full h-screen flex flex-col relative">
-      {/* Header */}
+      {/* Header - Updated with new logo style */}
       <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} p-4 flex justify-between items-center sticky top-0 z-10 border-b`}>
         <div className="flex items-center gap-3">
           <motion.button
@@ -208,9 +351,19 @@ const BlinkHomePreview = () => {
           >
             <Menu className="w-6 h-6" />
           </motion.button>
-          <h1 className={`text-xl font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-            Home
-          </h1>
+          <motion.h1 
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className={`${archivoBlack.className} text-3xl
+              ${isDarkMode ? 'text-white' : 'text-black'}
+            `}
+            style={{
+              fontWeight: 900,
+              letterSpacing: '-0.02em',
+            }}
+          >
+            BLINK
+          </motion.h1>
         </div>
         <div className="flex gap-3">
           <Link href="/chat">
