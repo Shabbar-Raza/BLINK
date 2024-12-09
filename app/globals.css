@@ -99,6 +99,7 @@ body {
   scroll-behavior: smooth !important;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
 }
 
 /* Custom Scrollbar */
@@ -132,7 +133,7 @@ body {
   scroll-behavior: smooth !important;
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: auto;
   scroll-snap-type: y proximity;
 }
 
@@ -166,4 +167,14 @@ body {
   -webkit-text-stroke: 2px black;
   -webkit-text-fill-color: white;
   filter: drop-shadow(2px 2px 0 black);
+}
+
+/* Add these new classes for momentum scrolling */
+.momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  overscroll-behavior-y: auto;
+  scroll-snap-type: y proximity;
+  height: 100%;
+  width: 100%;
 }

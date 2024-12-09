@@ -25,7 +25,7 @@ const BlinkHomePreview = () => {
       title: 'AP Physics',
       progress: 60,
       icon: '⚡',
-      bgColor: 'bg-gradient-to-br from-purple-500 to-pink-500',
+      bgColor: 'bg-gradient-to-br from-blue-500 to-purple-500',
       notesPage: '/physics'
     },
     {
@@ -102,7 +102,7 @@ const BlinkHomePreview = () => {
             router.push('/create-course');
           }}
         >
-          <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center mb-1">
+          <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-1">
             <span className="text-2xl">📚</span>
           </div>
           <span className="text-xs">Course</span>
@@ -511,7 +511,7 @@ const BlinkHomePreview = () => {
       } z-50`}>
         <motion.button 
           whileTap={{ scale: 0.95 }} 
-          className={isDarkMode ? 'text-purple-400' : 'text-emerald-600'}
+          className={isDarkMode ? 'text-blue-400' : 'text-blue-600'}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -531,7 +531,9 @@ const BlinkHomePreview = () => {
 
         <motion.button
           whileTap={{ scale: 0.95 }}
-          className={`${isDarkMode ? 'bg-purple-900/50 text-purple-400' : 'bg-emerald-100 text-emerald-600'} rounded-2xl p-2`}
+          className={`${
+            isDarkMode ? 'bg-blue-900/50 text-blue-400' : 'bg-blue-100 text-blue-600'
+          } rounded-2xl p-2`}
           onClick={() => setShowQuickActions(!showQuickActions)}
         >
           <svg
@@ -555,7 +557,7 @@ const BlinkHomePreview = () => {
         <motion.button 
           whileTap={{ scale: 0.95 }} 
           onClick={toggleDarkMode}
-          className={isDarkMode ? 'text-purple-400' : 'text-emerald-600'}
+          className={isDarkMode ? 'text-blue-400' : 'text-blue-600'}
         >
           {isDarkMode ? (
             <Sun className="h-6 w-6" />

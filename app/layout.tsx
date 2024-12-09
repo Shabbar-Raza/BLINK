@@ -17,13 +17,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body 
-        className={`${inter.className} antialiased overflow-y-auto`}
+        className={`${inter.className} antialiased overflow-y-auto momentum-scroll`}
         style={{ 
           scrollBehavior: 'smooth',
           WebkitOverflowScrolling: 'touch'
         }}
       >
-        <main className="w-full min-h-screen overflow-y-auto scroll-smooth">
+        <main className="w-full min-h-screen overflow-y-auto scroll-smooth momentum-scroll">
           {children}
         </main>
       </body>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowLeft, Download, Bookmark, Share2 } from 'lucide-react';
+import { ArrowLeft, Download, Bookmark, Share2, Gift } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -34,6 +34,11 @@ const TwoDimensionalMotionNotes = () => {
             <span>Back to Practice</span>
           </Link>
           <div className="flex gap-3">
+            <Link href="/physics/two-dimensional-motion/rag-chat">
+              <button className="px-4 py-2 text-white bg-red-500 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                RAG
+              </button>
+            </Link>
             <motion.button
               whileTap={{ scale: 0.95 }}
               className="p-2 text-gray-600 hover:bg-gray-100 rounded-full"
