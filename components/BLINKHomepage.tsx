@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Moon, Sun, Menu, LogOut, Settings, User, AlertTriangle, Heart, Activity, HelpCircle } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Archivo_Black } from 'next/font/google';
+import Image from 'next/image';
 
 const archivoBlack = Archivo_Black({ 
   weight: '400',
@@ -338,55 +339,49 @@ const BlinkHomePreview = () => {
 
   return (
     <div className="w-full h-screen flex flex-col relative">
-      {/* Header - Updated with new logo style */}
-      <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} p-4 flex justify-between items-center sticky top-0 z-10 border-b`}>
-        <div className="flex items-center gap-3">
-          <motion.button
-            onClick={() => setIsSidebarOpen(true)}
-            className={`p-2 rounded-lg ${
-              isDarkMode 
-                ? 'hover:bg-gray-700 text-white' 
-                : 'hover:bg-gray-100 text-gray-700'
-            }`}
+      {/* Header - Updated with smaller padding */}
+      <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} p-3 flex justify-between items-center sticky top-0 z-10 border-b`}>
+        <div className="flex items-center gap-2">
+          <motion.div
+            initial={{ rotate: -180, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 260,
+              damping: 20,
+              duration: 1
+            }}
+            whileHover={{ 
+              scale: 1.1,
+              rotate: 10,
+              transition: { duration: 0.2 }
+            }}
+            className="w-10 h-10 relative"
           >
-            <Menu className="w-6 h-6" />
-          </motion.button>
+            <Image
+              src="/media/logohead2.png" // Replace with your actual logo path
+              alt="BLINK Logo"
+              width={40}
+              height={40}
+              className="object-contain"
+              priority
+            />
+          </motion.div>
+          
           <motion.h1 
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className={`${archivoBlack.className} text-3xl
+            transition={{ delay: 0.2 }}
+            className={`${archivoBlack.className} text-4xl
               ${isDarkMode ? 'text-white' : 'text-black'}
             `}
             style={{
-              fontWeight: 900,
+              fontWeight: 800,
               letterSpacing: '-0.02em',
             }}
           >
             BLINK
           </motion.h1>
-        </div>
-        <div className="flex gap-3">
-          <Link href="/chat">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              className="w-10 h-10 bg-emerald-100 rounded-2xl flex items-center justify-center"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-emerald-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-            </motion.button>
-          </Link>
         </div>
       </div>
 
@@ -505,66 +500,86 @@ const BlinkHomePreview = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation - Minimalist and Consistent Design */}
       <div className={`fixed bottom-0 left-0 right-0 flex justify-around items-center p-4 border-t ${
         isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
       } z-50`}>
-        <motion.button 
-          whileTap={{ scale: 0.95 }} 
-          className={isDarkMode ? 'text-blue-400' : 'text-blue-600'}
+        {/* Menu Button */}
+        <motion.button
+          onClick={() => setIsSidebarOpen(true)}
+          className={`p-2 rounded-full ${
+            isDarkMode 
+              ? 'bg-gray-700 text-gray-300' 
+              : 'bg-gray-100 text-gray-600'
+          }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            />
-          </svg>
+          <Menu className="w-6 h-6" />
         </motion.button>
 
+        {/* Quick Actions Button */}
         <motion.button
           whileTap={{ scale: 0.95 }}
-          className={`${
-            isDarkMode ? 'bg-blue-900/50 text-blue-400' : 'bg-blue-100 text-blue-600'
-          } rounded-2xl p-2`}
+          className={`p-2 rounded-full ${
+            isDarkMode 
+              ? 'bg-emerald-500 text-emerald-400' 
+              : 'bg-emerald-100 text-emerald-600'
+          }`}
           onClick={() => setShowQuickActions(!showQuickActions)}
         >
-          <svg
+          <svg 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
             xmlns="http://www.w3.org/2000/svg"
-            className={`h-8 w-8 transition-transform duration-300 text-emerald-600 ${
+            className={`transition-transform duration-300 ${
               showQuickActions ? 'rotate-45' : ''
             }`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
           >
-            <path
-              strokeLinecap="round"
+            <path 
+              d="M12 5V19M5 12H19" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
               strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
             />
           </svg>
         </motion.button>
 
-        <motion.button 
-          whileTap={{ scale: 0.95 }} 
-          onClick={toggleDarkMode}
-          className={isDarkMode ? 'text-blue-400' : 'text-blue-600'}
-        >
-          {isDarkMode ? (
-            <Sun className="h-6 w-6" />
-          ) : (
-            <Moon className="h-6 w-6" />
-          )}
-        </motion.button>
+        {/* Chat Button */}
+        <Link href="/chat">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            className={`p-2 rounded-full ${
+              isDarkMode 
+                ? 'bg-blue-500 text-blue-400' 
+                : 'bg-blue-100 text-blue-600'
+            }`}
+          >
+            <svg 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2.5 21.5L7 20.6622C8.47087 21.513 10.1786 22 12 22Z" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+              <path 
+                d="M8 12H8.01M12 12H12.01M16 12H16.01" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          </motion.button>
+        </Link>
       </div>
 
       {showQuickActions && <QuickActionMenu />}
