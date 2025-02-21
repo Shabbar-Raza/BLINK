@@ -31,7 +31,7 @@ const EducationLevel = () => {
                 className="mr-2"
                 onChange={(e) => setSelectedLevel(e.target.value)}
               />
-              School Class 1-5
+              Grade 1-5
             </label>
             <label className="block">
               <input
@@ -41,7 +41,7 @@ const EducationLevel = () => {
                 className="mr-2"
                 onChange={(e) => setSelectedLevel(e.target.value)}
               />
-              School Class 6-10
+              Grade 6-10
             </label>
             <label className="block">
               <input
@@ -51,7 +51,7 @@ const EducationLevel = () => {
                 className="mr-2"
                 onChange={(e) => setSelectedLevel(e.target.value)}
               />
-              College
+              Univeristy
             </label>
 
             <button

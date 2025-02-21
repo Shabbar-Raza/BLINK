@@ -13,33 +13,23 @@ export default function RagChat() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    // Add user message
     setMessages(prev => [...prev, { role: 'user', content: input }]);
-    
-    // TODO: Implement your RAG API call here
-    // const response = await fetch('/api/rag', {
-    //   method: 'POST',
-    //   body: JSON.stringify({ message: input }),
-    // });
-    // const data = await response.json();
-    
-    // For now, just echo the message
     setMessages(prev => [...prev, { role: 'assistant', content: `Response to: ${input}` }]);
     setInput('');
   };
 
   return (
     <main className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Notes RAG Chat</h1>
+      <h1 className="text-2xl font-bold mb-6">AI Help</h1>
       
-      <div className="bg-gray-100 rounded-lg p-4 h-[60vh] overflow-y-auto mb-4">
+      <div className="bg-gray-50 rounded-lg p-4 h-[60vh] overflow-y-auto mb-4">
         {messages.map((message, index) => (
           <div 
             key={index}
             className={`mb-4 p-3 rounded-lg ${
               message.role === 'user' 
-                ? 'bg-blue-100 ml-auto max-w-[80%]' 
-                : 'bg-white max-w-[80%]'
+                ? 'bg-orange-100 ml-auto max-w-[80%]' 
+                : 'bg-white border border-gray-200 max-w-[80%]'
             }`}
           >
             {message.content}
@@ -52,12 +42,12 @@ export default function RagChat() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 p-2 border rounded-lg"
+          className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           placeholder="Ask about your notes..."
         />
         <button 
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all shadow-md hover:shadow-lg"
         >
           Send
         </button>

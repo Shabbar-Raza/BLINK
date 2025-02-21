@@ -92,10 +92,10 @@ const BlinkHomePreview = () => {
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 100 }}
-        className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl shadow-xl p-4 flex gap-4 z-50"
+        className="fixed bottom-16 left-1/2 mx-4 bg-white rounded-xl shadow-xl p-4 flex justify-center gap-8 z-50"
       >
         <motion.button
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="flex flex-col items-center"
           onClick={() => {
@@ -103,14 +103,14 @@ const BlinkHomePreview = () => {
             router.push('/create-course');
           }}
         >
-          <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-1">
+          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-1">
             <span className="text-2xl">📚</span>
           </div>
           <span className="text-xs">Course</span>
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="flex flex-col items-center"
           onClick={() => {
@@ -118,7 +118,7 @@ const BlinkHomePreview = () => {
             router.push('/notes');
           }}
         >
-          <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mb-1">
+          <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-1">
             <span className="text-2xl">📝</span>
           </div>
           <span className="text-xs">Notes</span>
@@ -241,8 +241,6 @@ const BlinkHomePreview = () => {
                 { href: '/profile', icon: <User />, label: 'Profile' },
                 { href: '/settings', icon: <Settings />, label: 'Settings' },
                 { href: '/help', icon: <HelpCircle />, label: 'Help & Support' },
-                { href: '/activity', icon: <Activity />, label: 'Activity' },
-                { href: '/favorites', icon: <Heart />, label: 'Favorites' },
               ].map((item, index) => (
                 <motion.div
                   key={item.href}

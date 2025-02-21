@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowLeft, Download, Bookmark, Share2, Gift } from 'lucide-react';
+import { ArrowLeft, Download, Bookmark, Share2, Bot } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -31,12 +31,13 @@ const TwoDimensionalMotionNotes = () => {
         <div className="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
           <Link href="/physics/two-dimensional-motion" className="inline-flex items-center gap-2 text-gray-700 text-sm">
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to Practice</span>
+            <span>Back</span>
           </Link>
           <div className="flex gap-3">
             <Link href="/physics/two-dimensional-motion/rag-chat">
-              <button className="px-4 py-2 text-white bg-red-500 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                RAG
+              <button className="px-3 py-1.5 text-white bg-sky-500 hover:bg-sky-400 rounded-full shadow-sm hover:shadow-md transition-all inline-flex items-center gap-2">
+                <Bot className="h-4 w-4" />
+                <span>Chat</span>
               </button>
             </Link>
             <motion.button

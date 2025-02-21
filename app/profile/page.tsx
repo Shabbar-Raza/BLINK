@@ -1,69 +1,187 @@
 'use client';
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, UserCircle } from 'lucide-react';
+import { ArrowLeft, Clock, Trophy, Target, BookOpen, BrainCircuit } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function Profile() {
   const router = useRouter();
 
+  const courseStats = [
+    {
+      course: "AP Physics",
+      timeSpent: "24h 30m",
+      quizzesTaken: 15,
+      averageScore: 85,
+      lastActive: "2 days ago"
+    },
+    {
+      course: "Precalculus",
+      timeSpent: "18h 45m",
+      quizzesTaken: 12,
+      averageScore: 92,
+      lastActive: "1 day ago"
+    },
+    {
+      course: "Macroeconomics",
+      timeSpent: "12h 15m",
+      quizzesTaken: 8,
+      averageScore: 78,
+      lastActive: "5 days ago"
+    }
+  ];
+
+  const recentQuizzes = [
+    {
+      title: "Two-dimensional Motion",
+      score: 90,
+      date: "Mar 15, 2024",
+      course: "AP Physics"
+    },
+    {
+      title: "Derivatives",
+      score: 85,
+      date: "Mar 14, 2024",
+      course: "Precalculus"
+    },
+    {
+      title: "Supply and Demand",
+      score: 95,
+      date: "Mar 12, 2024",
+      course: "Macroeconomics"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="sticky top-0 bg-white border-b p-4 flex items-center">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header - Fixed back button */}
+      <div className="sticky top-0 bg-white border-b px-3 py-3 flex items-center">
         <motion.button
           whileTap={{ scale: 0.95 }}
-          onClick={() => router.back()}
-          className="mr-4"
+          onClick={() => router.push('/')}
+          className="mr-3"
         >
-          <ArrowLeft className="h-6 w-6" />
+          <ArrowLeft className="h-5 w-5" />
         </motion.button>
-        <h1 className="text-xl font-semibold">Profile</h1>
+        <h1 className="text-lg font-semibold">My Profile</h1>
       </div>
 
-      {/* Profile Content */}
-      <div className="p-4 space-y-6">
-        <div className="flex flex-col items-center">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-4"
-          >
-            <UserCircle className="w-16 h-16 text-emerald-600" />
-          </motion.div>
-          <h2 className="text-xl font-semibold">User Name</h2>
-          <p className="text-gray-500">user@example.com</p>
-        </div>
-
-        <div className="space-y-4">
-          <div className="bg-white rounded-2xl p-4 shadow-sm border">
-            <h3 className="font-medium mb-2">Personal Information</h3>
-            <div className="space-y-2">
-              <div>
-                <label className="text-sm text-gray-500">Full Name</label>
-                <input
-                  type="text"
-                  className="w-full p-2 rounded-xl border mt-1"
-                  placeholder="Enter your name"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-gray-500">Email</label>
-                <input
-                  type="email"
-                  className="w-full p-2 rounded-xl border mt-1"
-                  placeholder="Enter your email"
-                />
-              </div>
+      {/* Profile Content - Adjusted padding */}
+      <div className="max-w-3xl mx-auto px-3 py-4 space-y-4">
+        {/* Profile Overview - Reduced padding and gap */}
+        <div className="bg-white rounded-xl p-4 shadow-sm">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white text-xl font-bold">
+              MS
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Muhammad Shabbar</h2>
+              <p className="text-gray-500 text-sm">Grade 10 Student</p>
+              <p className="text-gray-500 text-sm">k213265@nu.edu.pk</p>
             </div>
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full bg-emerald-500 text-white py-3 rounded-xl font-medium"
-          >
-            Save Changes
-          </motion.button>
+          {/* Quick Stats - Adjusted grid for mobile */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-orange-50 p-3 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <Clock className="w-4 h-4 text-orange-600" />
+                <span className="text-xs text-gray-600">Total Time</span>
+              </div>
+              <p className="text-lg font-bold text-gray-900">55h 30m</p>
+            </div>
+            <div className="bg-emerald-50 p-3 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <Trophy className="w-4 h-4 text-emerald-600" />
+                <span className="text-xs text-gray-600">Avg Score</span>
+              </div>
+              <p className="text-lg font-bold text-gray-900">85%</p>
+            </div>
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <Target className="w-4 h-4 text-blue-600" />
+                <span className="text-xs text-gray-600">Quizzes</span>
+              </div>
+              <p className="text-lg font-bold text-gray-900">35</p>
+            </div>
+            <div className="bg-purple-50 p-3 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <BookOpen className="w-4 h-4 text-purple-600" />
+                <span className="text-xs text-gray-600">Courses</span>
+              </div>
+              <p className="text-lg font-bold text-gray-900">3</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Course Performance - Adjusted padding */}
+        <div className="bg-white rounded-xl p-4 shadow-sm">
+          <h3 className="text-base font-semibold mb-3">Course Performance</h3>
+          <div className="space-y-3">
+            {courseStats.map((course, index) => (
+              <div key={index} className="border rounded-lg p-3">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-semibold text-gray-900">{course.course}</h4>
+                  <span className="text-xs text-gray-500">Last active: {course.lastActive}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <p className="text-xs text-gray-500">Time Spent</p>
+                    <p className="font-semibold text-sm">{course.timeSpent}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Quizzes Taken</p>
+                    <p className="font-semibold text-sm">{course.quizzesTaken}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Average Score</p>
+                    <p className="font-semibold text-sm">{course.averageScore}%</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Quiz Performance - Adjusted padding */}
+        <div className="bg-white rounded-xl p-4 shadow-sm">
+          <h3 className="text-base font-semibold mb-3">Recent Quizzes</h3>
+          <div className="space-y-2">
+            {recentQuizzes.map((quiz, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <h4 className="font-medium text-sm text-gray-900">{quiz.title}</h4>
+                  <p className="text-xs text-gray-500">{quiz.course} • {quiz.date}</p>
+                </div>
+                <div className={`px-2 py-1 rounded-md text-sm ${
+                  quiz.score >= 90 ? 'bg-green-100 text-green-700' :
+                  quiz.score >= 80 ? 'bg-blue-100 text-blue-700' :
+                  'bg-orange-100 text-orange-700'
+                }`}>
+                  {quiz.score}%
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Learning Insights - Adjusted padding */}
+        <div className="bg-white rounded-xl p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <BrainCircuit className="w-4 h-4 text-purple-600" />
+            <h3 className="text-base font-semibold">Learning Insights</h3>
+          </div>
+          <div className="space-y-2">
+            <div className="bg-purple-50 rounded-lg p-3">
+              <p className="text-sm text-gray-700">Best performing subject: <span className="font-semibold">Precalculus</span></p>
+              <p className="text-xs text-gray-500">Average score of 92% across 12 quizzes</p>
+            </div>
+            <div className="bg-orange-50 rounded-lg p-3">
+              <p className="text-sm text-gray-700">Suggested focus area: <span className="font-semibold">Macroeconomics</span></p>
+              <p className="text-xs text-gray-500">Recent quiz scores below your average</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

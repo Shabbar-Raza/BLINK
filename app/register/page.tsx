@@ -58,7 +58,7 @@ const Register = () => {
                   </span>
                   <input
                     type="tel"
-                    placeholder="Mobile Number"
+                    placeholder="email"
                     className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100"
                     value={mobile}
                     onChange={(e) => setMobile(e.target.value)}

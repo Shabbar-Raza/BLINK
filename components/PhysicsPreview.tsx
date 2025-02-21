@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChevronDown, BookOpen, ArrowLeft } from 'lucide-react';
+import { ChevronDown, BookOpen, ArrowLeft, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '../contexts/ThemeContext';
@@ -67,9 +67,12 @@ const PhysicsPreview = () => {
 
         {/* Course Content */}
         <div className="px-6 py-6 pb-20">
-          <h1 className={`text-2xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            AP Physics
-          </h1>
+          <div className="flex items-center justify-between mb-3">
+            <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              Precalculus
+            </h1>
+            <Upload className="h-5 w-5 text-gray-600" />
+          </div>
           
           <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-sm mb-6 leading-relaxed`}>
             Master fundamental physics concepts through comprehensive study of mechanics, energy, 
@@ -107,7 +110,7 @@ const PhysicsPreview = () => {
       <div className="bg-purple-600 h-14 flex-shrink-0">
         <button className="w-full h-full flex items-center justify-center gap-2 text-white text-sm font-medium">
           <BookOpen className="h-4 w-4" />
-          Add to My Courses
+          Add New Topic
         </button>
       </div>
     </div>
