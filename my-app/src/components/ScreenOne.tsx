@@ -10,32 +10,30 @@ type ScreenOneProps = {
     navigation: FrameNavigationProp<MainStackParamList, "One">,
 };
 
-export function ScreenOne({ navigation }: ScreenOneProps) {
+const ScreenOne = ({ navigation }: ScreenOneProps) => {
     return (
-        <gridLayout rows="*,auto,auto,*,auto,100">
-            <label
-                row="1"
-                className="fas text-3xl text-center leading-8"
-                height="40"
-            >
-                &#xf135; You're viewing screen one!
+        <div className="flex flex-col space-y-4">
+            <label className="text-3xl text-center h-12">
+                Screen 1
             </label>
-            <button
-                row="2"
-                className="ronded-full text-3xl p-5 my-5" 
-                width="300"
-                onTap={() => Dialogs.alert("Tapped!")}
+
+            <button 
+                className="w-32 px-4 py-2 bg-blue-500 text-white rounded"
+                onClick={() => navigation.navigate("Two", { message: "Hello, world!" })}
             >
-                Tap me for an alert
+                Go to Screen 2
             </button>
-            <button
-                row="4"
-                className="ronded-full text-2xl p-5" 
-                width="300"
-                onTap={() => navigation.navigate("Two", { message: "Hello, world!" })}
+
+            <button 
+                className="w-32 px-4 py-2 bg-red-500 text-white rounded"
+                onClick={() => {
+                    // your tap handler code
+                }}
             >
-                Go to next screen
+                Go Back
             </button>
-        </gridLayout>
+        </div>
     );
-}
+};
+
+export default ScreenOne;

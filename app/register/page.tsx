@@ -2,15 +2,65 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
 
 const Register = () => {
+  const router = useRouter();
   const [username, setUsername] = React.useState('');
+  const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [mobile, setMobile] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   const isFormValid = username.trim() !== '' && 
                      password.trim() !== '' && 
-                     mobile.trim() !== '';
+                     email.trim() !== '';
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!isFormValid) return;
+
+    try {
+      setLoading(true);
+      setError('');
+
+      // Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // Store additional user data in Firestore
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        username,
+        email,
+        createdAt: new Date().toISOString(),
+      });
+
+      // Clear form and redirect
+      setUsername('');
+      setEmail('');
+      setPassword('');
+      
+      // Add console log to debug
+      console.log('Registration successful, redirecting...');
+      
+      // Force router push to home page
+      await router.push('/');
+      router.refresh();
+
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      setError(error.message || 'An error occurred during registration');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -30,7 +80,13 @@ const Register = () => {
           <h1 className="text-2xl font-semibold mb-2">Register</h1>
           <p className="text-gray-500 text-sm mb-8">Please register to login.</p>
           
-          <form className="space-y-4">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 text-red-500 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-4">
               <div className="relative">
                 <div className="flex items-center">
@@ -53,15 +109,15 @@ const Register = () => {
                 <div className="flex items-center">
                   <span className="absolute left-4">
                     <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </span>
                   <input
-                    type="tel"
-                    placeholder="email"
+                    type="email"
+                    placeholder="Email"
                     className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100"
-                    value={mobile}
-                    onChange={(e) => setMobile(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -84,34 +140,16 @@ const Register = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-4">
-              <div className="flex items-center">
-                <label className="flex items-center text-sm text-gray-500">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 mr-2 rounded border-gray-300"
-                  />
-                  Remember me next time
-                </label>
-              </div>
-            </div>
-
             <button
               type="submit"
               className={`w-full py-3 rounded-xl font-medium mt-6 ${
-                isFormValid 
+                isFormValid && !loading
                   ? 'bg-[#1e2a4a] text-white' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
-              disabled={!isFormValid}
-              onClick={(e) => {
-                e.preventDefault();
-                if (isFormValid) {
-                  window.location.href = '/register/education';
-                }
-              }}
+              disabled={!isFormValid || loading}
             >
-              Next
+              {loading ? 'Creating account...' : 'Next'}
             </button>
           </form>
 

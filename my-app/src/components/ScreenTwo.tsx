@@ -9,23 +9,27 @@ type ScreenTwoProps = {
     navigation: FrameNavigationProp<MainStackParamList, "Two">,
 };
 
-export function ScreenTwo({ navigation, route }: ScreenTwoProps) {
+const ScreenTwo = () => {
     return (
-        <gridLayout rows="*,auto,auto,*,auto,100">
-            <label row="1" className="text-3xl text-center">
-                You're viewing screen two!
+        <div className="flex flex-col space-y-4">
+            <label className="text-3xl text-center">
+                Screen 2
             </label>
-            <label row="2" className="text-3xl text-center my-5">
-                Message: {route.params.message}
+
+            <label className="text-3xl text-center my-5">
+                Welcome to Screen 2!
             </label>
-            <button
-                row="4"
-                className="ronded-full text-2xl p-5"
-                width="300"
-                onTap={() => navigation.goBack()}
+
+            <button 
+                className="w-32 px-4 py-2 bg-red-500 text-white rounded"
+                onClick={() => {
+                    // your tap handler code
+                }}
             >
-                Go back
+                Go Back
             </button>
-        </gridLayout>
+        </div>
     );
-}
+};
+
+export default ScreenTwo;
