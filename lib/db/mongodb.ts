@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 if (!process.env.MONGODB_URI) {
   throw new Error('Please add your Mongo URI to .env.local');
@@ -117,6 +118,52 @@ export const dbUtils = {
         .toArray();
     } catch (error) {
       console.error('Error fetching user courses:', error);
+      throw error;
+    }
+  },
+
+  createTopic: async (courseId: string, topicData: {
+    title: string,
+    subtopics?: string[],
+    fileType?: string,
+    fileUrl?: string,
+    created_at: Date
+  }) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const result = await db.collection('topics').insertOne({
+        courseId,
+        ...topicData
+      });
+      return result;
+    } catch (error) {
+      console.error('Error creating topic:', error);
+      throw error;
+    }
+  },
+
+  getCourseWithTopics: async (courseId: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      
+      const course = await db.collection('courses').findOne({ 
+        _id: new ObjectId(courseId) 
+      });
+
+      if (!course) return null;
+
+      const topics = await db.collection('topics')
+        .find({ courseId })
+        .toArray();
+
+      return {
+        ...course,
+        topics
+      };
+    } catch (error) {
+      console.error('Error fetching course with topics:', error);
       throw error;
     }
   }
