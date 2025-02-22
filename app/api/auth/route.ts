@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { dbUtils } from '@/lib/db/mongodb';
+import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
   try {
@@ -31,6 +32,15 @@ export async function POST(request: Request) {
         }
         
         console.log('Login successful'); // Debug log
+        // Set the cookie after successful login
+        const cookieStore = await cookies();
+        cookieStore.set('userEmail', user.email, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          path: '/'
+        });
+        
         return NextResponse.json({ success: true });
 
       default:

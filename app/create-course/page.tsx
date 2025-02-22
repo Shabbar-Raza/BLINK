@@ -1,75 +1,89 @@
 'use client';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+const CreateCourse = () => {
+  const router = useRouter();
+  const [title, setTitle] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-export default function CreateCoursePage() {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+
+    try {
+      setLoading(true);
+      setError('');
+
+      const response = await fetch('/api/courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          icon: '📚', // Default icon
+          bgColor: 'bg-emerald-500', // Default background
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Course creation response:', data);
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create course');
+      }
+
+      router.push('/'); // Return to homepage
+    } catch (error) {
+      console.error('Error creating course:', error);
+      setError('Failed to create course');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-700 text-sm">
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back</span>
-        </Link>
-      </header>
-
-      {/* Main Content */}
-      <div className="max-w-2xl mx-auto p-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Create New Course</h1>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-md mx-auto bg-white rounded-xl shadow-sm p-6">
+        <h1 className="text-2xl font-semibold mb-6">Create New Course</h1>
         
-        <form className="space-y-6">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 text-red-500 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Course Title
             </label>
             <input
               type="text"
-              id="title"
-              className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              placeholder="e.g., AP Physics, Calculus, etc."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder="Enter course title"
             />
           </div>
 
-          <div>
-            <label htmlFor="icon" className="block text-sm font-medium text-gray-700 mb-1">
-              Course Icon
-            </label>
-            <select
-              id="icon"
-              className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="⚡">⚡ Physics</option>
-              <option value="📐">📐 Math</option>
-              <option value="🧪">🧪 Chemistry</option>
-              <option value="📊">📊 Economics</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              id="description"
-              rows={4}
-              className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              placeholder="Brief description of the course..."
-            />
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
+          <button
             type="submit"
-            className="w-full bg-emerald-500 text-white py-3 rounded-xl font-medium hover:bg-emerald-600 transition-colors"
+            disabled={loading || !title.trim()}
+            className={`w-full py-2 rounded-lg font-medium ${
+              loading || !title.trim()
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-emerald-600 text-white hover:bg-emerald-700'
+            }`}
           >
-            Create Course
-          </motion.button>
+            {loading ? 'Creating...' : 'Create Course'}
+          </button>
         </form>
       </div>
     </div>
   );
-} 
+};
+
+export default CreateCourse;

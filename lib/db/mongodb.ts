@@ -82,5 +82,42 @@ export const dbUtils = {
       console.error('Error getting user:', error);
       throw error;
     }
+  },
+
+  createCourse: async (userId: string, courseData: {
+    title: string,
+    icon: string,
+    bgColor: string
+  }) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const result = await db.collection('courses').insertOne({
+        userId,
+        title: courseData.title,
+        icon: courseData.icon,
+        bgColor: courseData.bgColor,
+        progress: 0,
+        created_at: new Date()
+      });
+      console.log('Course created:', result);
+      return result;
+    } catch (error) {
+      console.error('Error creating course:', error);
+      throw error;
+    }
+  },
+
+  getUserCourses: async (userId: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      return await db.collection('courses')
+        .find({ userId })
+        .toArray();
+    } catch (error) {
+      console.error('Error fetching user courses:', error);
+      throw error;
+    }
   }
 }; 

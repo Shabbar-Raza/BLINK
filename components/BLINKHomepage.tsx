@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -14,39 +14,25 @@ const archivoBlack = Archivo_Black({
   subsets: ['latin'] 
 });
 
+// Add this interface at the top of the file
+interface Course {
+  _id: string;
+  title: string;
+  icon: string;
+  bgColor: string;
+  progress: number;
+  userId: string;
+}
+
 const BlinkHomePreview = () => {
   const router = useRouter();
   const [showQuickActions, setShowQuickActions] = useState(false);
   const { isDarkMode, toggleDarkMode } = useTheme();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateCoursePrompt, setShowCreateCoursePrompt] = useState(false);
   
-  const [courses] = useState([
-    {
-      id: 1,
-      title: 'AP Physics',
-      progress: 60,
-      icon: '⚡',
-      bgColor: 'bg-gradient-to-br from-blue-500 to-purple-500',
-      notesPage: '/physics'
-    },
-    {
-      id: 2,
-      title: 'Precalculus',
-      progress: 45,
-      icon: '📐',
-      bgColor: 'bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500',
-      notesPage: '/precalculus'
-    },
-    {
-      id: 3,
-      title: 'AP/College Macroeconomics',
-      progress: 30,
-      icon: '🌍',
-      bgColor: 'bg-gradient-to-br from-orange-500 to-yellow-500',
-      notesPage: '/courses/macroeconomics'
-    }
-  ]);
-
   const [recentTopics] = useState([
     {
       id: 1,
@@ -77,6 +63,29 @@ const BlinkHomePreview = () => {
     { id: 2, name: 'Statistics', icon: '📈' },
     { id: 3, name: 'Chemistry', icon: '🧪' }
   ]);
+
+  // Fetch user's courses
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch('/api/courses');
+        const data = await response.json();
+        
+        if (data.courses) {
+          setCourses(data.courses);
+          if (data.courses.length === 0) {
+            setShowCreateCoursePrompt(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   const QuickActionMenu = () => (
     <>
@@ -335,6 +344,47 @@ const BlinkHomePreview = () => {
     </AnimatePresence>
   );
 
+  // Create Course Modal
+  const CreateCoursePrompt = () => (
+    <AnimatePresence>
+      {showCreateCoursePrompt && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            onClick={() => setShowCreateCoursePrompt(false)}
+          />
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 shadow-xl z-50 w-[90%] max-w-md"
+          >
+            <h3 className="text-xl font-semibold mb-4">Welcome to BLINK!</h3>
+            <p className="text-gray-600 mb-6">
+              Get started by creating your first course. This will help you organize your study materials and track your progress.
+            </p>
+            
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-3 bg-emerald-600 text-white rounded-xl font-medium"
+              onClick={() => {
+                setShowCreateCoursePrompt(false);
+                router.push('/create-course');
+              }}
+            >
+              Create My First Course
+            </motion.button>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+
   return (
     <div className="w-full h-screen flex flex-col relative">
       {/* Header - Updated with smaller padding */}
@@ -392,41 +442,51 @@ const BlinkHomePreview = () => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               className="w-8 h-8 bg-emerald-100 rounded-2xl flex items-center justify-center"
+              onClick={() => router.push('/create-course')}
             >
               <span className="text-xl text-emerald-600">+</span>
             </motion.button>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4">
-            {courses.map((course) => (
-              <Link 
-                key={course.id} 
-                href={course.notesPage}
-                className="flex-shrink-0 w-44"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push(course.notesPage);
-                }}
-              >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className={`h-44 ${course.bgColor} rounded-2xl relative p-4 cursor-pointer`}
+          {loading ? (
+            <div className="flex justify-center items-center h-44">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+            </div>
+          ) : courses.length > 0 ? (
+            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4">
+              {courses.map((course) => (
+                <Link 
+                  key={course._id} 
+                  href={`/courses/${course._id}`}
+                  className="flex-shrink-0 w-44"
                 >
-                  <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm text-white">
-                    {course.progress}%
-                  </div>
-                  <div className="absolute bottom-2 right-2 text-2xl">
-                    {course.icon}
-                  </div>
-                  <div className="absolute bottom-2 left-2 text-white font-medium text-sm">
-                    {course.title}
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={`h-44 ${course.bgColor} rounded-2xl relative p-4 cursor-pointer`}
+                  >
+                    <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm text-white">
+                      {course.progress}%
+                    </div>
+                    <div className="absolute bottom-2 right-2 text-2xl">
+                      {course.icon}
+                    </div>
+                    <div className="absolute bottom-2 left-2 text-white font-medium text-sm">
+                      {course.title}
+                    </div>
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="h-44 border-2 border-dashed border-gray-200 rounded-2xl flex items-center justify-center">
+              <p className="text-gray-500 text-center">
+                No courses yet.<br />
+                Click the + button to create your first course!
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Recently Opened Section */}
@@ -582,6 +642,7 @@ const BlinkHomePreview = () => {
 
       {showQuickActions && <QuickActionMenu />}
       {isSidebarOpen && <Sidebar />}
+      <CreateCoursePrompt />
     </div>
   );
 };
