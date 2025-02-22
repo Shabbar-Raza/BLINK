@@ -2,9 +2,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 const Register = () => {
@@ -15,48 +12,59 @@ const Register = () => {
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
-  const isFormValid = username.trim() !== '' && 
-                     password.trim() !== '' && 
-                     email.trim() !== '';
+  const isFormValid = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return (
+      username.trim().length >= 3 && 
+      emailRegex.test(email.trim()) && 
+      password.trim().length >= 6
+    );
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isFormValid) return;
+    if (!isFormValid()) {
+      setError('Please fill all fields correctly');
+      return;
+    }
 
     try {
       setLoading(true);
       setError('');
 
-      // Create user in Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      console.log('Sending registration request'); // Debug log
 
-      // Store additional user data in Firestore
-      await setDoc(doc(db, 'users', userCredential.user.uid), {
-        username,
-        email,
-        createdAt: new Date().toISOString(),
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'register',
+          username,
+          email,
+          password,
+        }),
       });
+
+      const data = await response.json();
+      console.log('Registration response:', data); // Debug log
+
+      if (!response.ok) {
+        setError(data.error || 'Registration failed');
+        return;
+      }
 
       // Clear form and redirect
       setUsername('');
       setEmail('');
       setPassword('');
       
-      // Add console log to debug
-      console.log('Registration successful, redirecting...');
-      
-      // Force router push to home page
-      await router.push('/');
-      router.refresh();
-
-    } catch (error: any) {
+      router.push('/login');
+    } catch (error) {
       console.error('Registration error:', error);
-      setError(error.message || 'An error occurred during registration');
+      setError('An error occurred during registration');
     } finally {
       setLoading(false);
     }
@@ -65,7 +73,7 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-4">
-        {/* Register Illustration */}
+        {/* Logo */}
         <div className="flex justify-center mb-2">
           <Image 
             src="/media/logo.png" 
@@ -77,8 +85,8 @@ const Register = () => {
         </div>
 
         <div className="bg-white rounded-3xl p-8 shadow-sm">
-          <h1 className="text-2xl font-semibold mb-2">Register</h1>
-          <p className="text-gray-500 text-sm mb-8">Please register to login.</p>
+          <h1 className="text-2xl font-semibold mb-2">Create Account</h1>
+          <p className="text-gray-500 text-sm mb-8">Please fill in the details to register.</p>
           
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-500 rounded-lg text-sm">
@@ -109,7 +117,7 @@ const Register = () => {
                 <div className="flex items-center">
                   <span className="absolute left-4">
                     <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </span>
                   <input
@@ -143,11 +151,11 @@ const Register = () => {
             <button
               type="submit"
               className={`w-full py-3 rounded-xl font-medium mt-6 ${
-                isFormValid && !loading
-                  ? 'bg-[#1e2a4a] text-white' 
+                isFormValid() && !loading
+                  ? 'bg-[#1e2a4a] text-white hover:bg-[#283a6d] transition-colors' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
-              disabled={!isFormValid || loading}
+              disabled={!isFormValid() || loading}
             >
               {loading ? 'Creating account...' : 'Next'}
             </button>
@@ -155,7 +163,7 @@ const Register = () => {
 
           <p className="text-center mt-6 text-sm text-gray-500">
             Already have an account?{' '}
-            <Link href="/login" className="text-[#1e2a4a] font-medium">
+            <Link href="/login" className="text-[#1e2a4a] font-medium hover:underline">
               Sign in
             </Link>
           </p>
