@@ -2,8 +2,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 const Login = () => {
@@ -24,10 +22,32 @@ const Login = () => {
       setLoading(true);
       setError('');
 
-      await signInWithEmailAndPassword(auth, email, password);
+      console.log('Login attempt with:', { email, password }); // Debug log
+
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'login',
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Login response:', data); // Debug log
+
+      if (!response.ok) {
+        setError(data.error || 'Login failed');
+        return;
+      }
+
       router.push('/'); // Redirect to home page after successful login
-    } catch (error: any) {
-      setError('Invalid email or password');
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred during login');
     } finally {
       setLoading(false);
     }
@@ -98,7 +118,7 @@ const Login = () => {
               type="submit"
               className={`w-full py-3 rounded-xl font-medium mt-6 ${
                 isFormValid && !loading
-                  ? 'bg-[#1e2a4a] text-white' 
+                  ? 'bg-[#1e2a4a] text-white hover:bg-[#283a6d] transition-colors' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               disabled={!isFormValid || loading}
