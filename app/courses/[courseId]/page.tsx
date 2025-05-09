@@ -1,11 +1,12 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, BookOpen, ArrowLeft, Upload } from 'lucide-react';
+import { ChevronDown, BookOpen, ArrowLeft, Upload, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface Topic {
+  _id: string;
   title: string;
   subtopics: string[];
   fileUrl?: string;
@@ -29,18 +30,28 @@ export default function CourseDetail({ params }: { params: { courseId: string } 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const response = await fetch(`/api/courses/${params.courseId}`);
+        const data = await response.json();
+        setCourse(data.course);
+      } catch (error) {
+        console.error('Error fetching course:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchCourse();
   }, [params.courseId]);
 
-  const fetchCourse = async () => {
+  const refreshCourse = async () => {
     try {
       const response = await fetch(`/api/courses/${params.courseId}`);
       const data = await response.json();
       setCourse(data.course);
     } catch (error) {
       console.error('Error fetching course:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -59,7 +70,7 @@ export default function CourseDetail({ params }: { params: { courseId: string } 
       });
       const data = await response.json();
       if (data.success) {
-        fetchCourse(); // Refresh course data
+        refreshCourse(); // Use refreshCourse instead of fetchCourse
       }
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -84,10 +95,30 @@ export default function CourseDetail({ params }: { params: { courseId: string } 
       if (response.ok) {
         setNewTopicTitle('');
         setShowAddTopic(false);
-        fetchCourse(); // Refresh course data
+        refreshCourse(); // Refresh course data
       }
     } catch (error) {
       console.error('Error adding topic:', error);
+    }
+  };
+
+  const handleTopicClick = (topic: Topic) => {
+    window.open('http://172.16.76.83:8501/', '_blank');
+  };
+
+  const handleDeleteTopic = async (topicId: string) => {
+    if (!window.confirm('Are you sure you want to delete this topic?')) return;
+
+    try {
+      const response = await fetch(`/api/topics/${topicId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        refreshCourse(); // Refresh to show updated topics list
+      }
+    } catch (error) {
+      console.error('Error deleting topic:', error);
     }
   };
 
@@ -139,14 +170,25 @@ export default function CourseDetail({ params }: { params: { courseId: string } 
                 key={index}
                 className={`w-full p-4 ${
                   isDarkMode ? 'bg-gray-800 text-gray-200' : 'bg-gray-50 text-gray-900'
-                } rounded-lg`}
+                } rounded-lg relative group`}
               >
-                <h3 className="font-medium">{topic.title}</h3>
-                {topic.fileType && (
-                  <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Uploaded file: {topic.fileType}
-                  </p>
-                )}
+                <button
+                  onClick={() => handleTopicClick(topic)}
+                  className="w-full text-left"
+                >
+                  <h3 className="font-medium">{topic.title}</h3>
+                  {topic.fileType && (
+                    <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Uploaded file: {topic.fileType}
+                    </p>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleDeleteTopic(topic._id)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 className="w-4 h-4 text-red-500 hover:text-red-600" />
+                </button>
               </div>
             ))}
           </div>

@@ -27,4 +27,18 @@ export async function GET(
     console.error('Error fetching course:', error);
     return NextResponse.json({ error: 'Failed to fetch course' }, { status: 500 });
   }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { courseId: string } }
+) {
+  try {
+    const courseId = params.courseId.toString();
+    await dbUtils.deleteCourse(courseId);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting course:', error);
+    return NextResponse.json({ error: 'Failed to delete course' }, { status: 500 });
+  }
 } 

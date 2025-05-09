@@ -166,5 +166,70 @@ export const dbUtils = {
       console.error('Error fetching course with topics:', error);
       throw error;
     }
+  },
+
+  updateTopicNotes: async (topicId: string, notes: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      return await db.collection('topics').updateOne(
+        { _id: new ObjectId(topicId) },
+        { $set: { generatedNotes: notes } }
+      );
+    } catch (error) {
+      console.error('Error updating topic notes:', error);
+      throw error;
+    }
+  },
+
+  getTopicById: async (topicId: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      return await db.collection('topics').findOne({ 
+        _id: new ObjectId(topicId) 
+      });
+    } catch (error) {
+      console.error('Error fetching topic:', error);
+      throw error;
+    }
+  },
+
+  deleteCourse: async (courseId: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      
+      // Delete all topics associated with the course
+      await db.collection('topics').deleteMany({
+        courseId: new ObjectId(courseId)
+      });
+      
+      // Delete the course
+      await db.collection('courses').deleteOne({
+        _id: new ObjectId(courseId)
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      throw error;
+    }
+  },
+
+  deleteTopic: async (topicId: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      
+      await db.collection('topics').deleteOne({
+        _id: new ObjectId(topicId)
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting topic:', error);
+      throw error;
+    }
   }
 }; 

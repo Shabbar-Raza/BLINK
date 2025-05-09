@@ -7,7 +7,7 @@ import { ArrowLeft, Send, Home, Plus, UserCircle } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Initialize Gemini
-const genAI = new GoogleGenerativeAI('AIzaSyAr7VGDkvs_m_94Ry1406NV5KS2j_tJzTA');
+const genAI = new GoogleGenerativeAI('AIzaSyDb-YJi-b1RW3I_g2OfacTBFHBk2GPLOhI');
 const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
 const ChatInterface = () => {

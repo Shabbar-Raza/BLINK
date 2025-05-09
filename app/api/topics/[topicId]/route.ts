@@ -53,4 +53,18 @@ export async function GET(
     console.error('Error fetching topic:', error);
     return NextResponse.json({ error: 'Failed to fetch topic' }, { status: 500 });
   }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { topicId: string } }
+) {
+  try {
+    const topicId = params.topicId.toString();
+    await dbUtils.deleteTopic(topicId);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting topic:', error);
+    return NextResponse.json({ error: 'Failed to delete topic' }, { status: 500 });
+  }
 } 

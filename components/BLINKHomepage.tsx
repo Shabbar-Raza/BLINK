@@ -1,10 +1,10 @@
-'use client';
+ 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Moon, Sun, Menu, LogOut, Settings, User, AlertTriangle, Heart, Activity, HelpCircle } from 'lucide-react';
+import { Moon, Sun, Menu, LogOut, Settings, User, AlertTriangle, Heart, Activity, HelpCircle, Upload, Trash2 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Archivo_Black } from 'next/font/google';
 import Image from 'next/image';
@@ -86,6 +86,24 @@ const BlinkHomePreview = () => {
 
     fetchCourses();
   }, []);
+
+  const handleDeleteCourse = async (courseId: string, e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation
+    if (!window.confirm('Are you sure you want to delete this course?')) return;
+
+    try {
+      const response = await fetch(`/api/courses/${courseId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Update courses list after deletion
+        setCourses(courses.filter(course => course._id !== courseId));
+      }
+    } catch (error) {
+      console.error('Error deleting course:', error);
+    }
+  };
 
   const QuickActionMenu = () => (
     <>
@@ -458,7 +476,7 @@ const BlinkHomePreview = () => {
                 <Link 
                   key={course._id} 
                   href={`/courses/${course._id}`}
-                  className="flex-shrink-0 w-44"
+                  className="flex-shrink-0 w-44 relative group"
                 >
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -469,6 +487,12 @@ const BlinkHomePreview = () => {
                     <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm text-white">
                       {course.progress}%
                     </div>
+                    <button
+                      onClick={(e) => handleDeleteCourse(course._id, e)}
+                      className="absolute top-2 right-2 p-2 bg-white/20 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-4 h-4 text-white hover:text-red-500" />
+                    </button>
                     <div className="absolute bottom-2 right-2 text-2xl">
                       {course.icon}
                     </div>
