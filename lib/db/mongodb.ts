@@ -236,6 +236,21 @@ export const dbUtils = {
     }
   },
 
+  renameTopic: async (topicId: string, newTitle: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const result = await db.collection('topics').updateOne(
+        { _id: new ObjectId(topicId) },
+        { $set: { title: newTitle } }
+      );
+      return result;
+    } catch (error) {
+      console.error('Error renaming topic:', error);
+      throw error;
+    }
+  },
+
   getClient: async () => {
     return await clientPromise;
   }

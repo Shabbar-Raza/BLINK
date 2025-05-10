@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Eye, BookOpen, Brain } from 'lucide-react';
+import { ArrowLeft, Eye, BookOpen, Brain, Pencil, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
+import { FileIcon } from 'lucide-react';
 
 interface TabButtonProps {
   active: boolean;
@@ -18,9 +19,9 @@ const TabButton: React.FC<TabButtonProps> = ({ active, onClick, icon, label, isD
   <button
     onClick={onClick}
     className={`
-      flex items-center gap-2 px-4 py-2 rounded-lg transition-colors
+      flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all duration-200
       ${active 
-        ? 'bg-blue-600 text-white' 
+        ? 'bg-purple-600 text-white shadow-md' 
         : isDarkMode
           ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -28,16 +29,27 @@ const TabButton: React.FC<TabButtonProps> = ({ active, onClick, icon, label, isD
     `}
   >
     {icon}
-    <span>{label}</span>
+    <span className="font-medium">{label}</span>
   </button>
 );
+
+interface Topic {
+  _id: string;
+  title: string;
+  courseId: string;
+  fileUrl?: string;
+  fileType?: string;
+  generatedNotes?: string;
+}
 
 export default function TopicPage() {
   const params = useParams();
   const { isDarkMode } = useTheme();
-  const [topic, setTopic] = useState<any>(null);
+  const [topic, setTopic] = useState<Topic | null>(null);
   const [activeTab, setActiveTab] = useState('view');
   const [loading, setLoading] = useState(true);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
 
   useEffect(() => {
     const fetchTopic = async () => {
@@ -63,6 +75,26 @@ export default function TopicPage() {
     fetchTopic();
   }, [params?.topicId]);
 
+  const handleRename = async () => {
+    if (!newTitle.trim() || !params?.topicId) return;
+
+    try {
+      const response = await fetch(`/api/topics/${params.topicId}/rename`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newTitle: newTitle.trim() })
+      });
+
+      if (response.ok) {
+        setTopic(prev => prev ? { ...prev, title: newTitle.trim() } : null);
+        setIsRenaming(false);
+        setNewTitle('');
+      }
+    } catch (error) {
+      console.error('Error renaming topic:', error);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!topic) return <div>Topic not found</div>;
 
@@ -77,9 +109,57 @@ export default function TopicPage() {
             <ArrowLeft className="h-5 w-5" />
             <span>Back to Course</span>
           </Link>
-          <h1 className={`text-2xl font-bold mt-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            {topic.title}
-          </h1>
+          
+          <div className="flex items-center justify-between mt-4">
+            {isRenaming ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className={`px-2 py-1 rounded border ${
+                    isDarkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300'
+                  }`}
+                  placeholder="Enter new title"
+                  autoFocus
+                />
+                <button
+                  onClick={handleRename}
+                  className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => {
+                    setIsRenaming(false);
+                    setNewTitle('');
+                  }}
+                  className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {topic.title}
+                </h1>
+                <button
+                  onClick={() => {
+                    setIsRenaming(true);
+                    setNewTitle(topic.title);
+                  }}
+                  className={`p-1 rounded-full hover:bg-gray-100 ${
+                    isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500'
+                  }`}
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </div>
           
           <div className="flex gap-4 mt-6">
             <TabButton 
@@ -114,18 +194,39 @@ export default function TopicPage() {
               Course Materials
             </h2>
             {topic.fileUrl && topic.fileType ? (
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <a 
-                  href={topic.fileUrl}
-                  className="text-blue-600 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View {topic.fileType.toUpperCase()} Document
-                </a>
+              <div className={`p-6 rounded-lg border ${
+                isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+              }`}>
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-lg ${
+                    isDarkMode ? 'bg-gray-600' : 'bg-white'
+                  }`}>
+                    <FileIcon className="h-6 w-6 text-purple-500" />
+                  </div>
+                  <div>
+                    <h3 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {topic.fileType.toUpperCase()} Document
+                    </h3>
+                    <a 
+                      href={topic.fileUrl}
+                      className="text-purple-600 hover:text-purple-700 text-sm mt-1 inline-flex items-center gap-1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View Document
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                </div>
               </div>
             ) : (
-              <p className="text-gray-500">No materials uploaded yet</p>
+              <div className={`p-6 rounded-lg border ${
+                isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+              }`}>
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-center`}>
+                  No materials uploaded yet
+                </p>
+              </div>
             )}
           </div>
         )}

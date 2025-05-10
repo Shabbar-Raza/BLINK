@@ -24,6 +24,18 @@ interface Course {
   userId: string;
 }
 
+// Add this array of gradients at the top of your component
+const courseGradients = [
+  'from-blue-500 to-purple-600',
+  'from-emerald-500 to-teal-600',
+  'from-rose-500 to-pink-600',
+  'from-amber-500 to-orange-600',
+  'from-indigo-500 to-blue-600',
+  'from-violet-500 to-purple-600',
+  'from-cyan-500 to-blue-600',
+  'from-fuchsia-500 to-pink-600',
+];
+
 const BlinkHomePreview = () => {
   const router = useRouter();
   const [showQuickActions, setShowQuickActions] = useState(false);
@@ -472,7 +484,7 @@ const BlinkHomePreview = () => {
             </div>
           ) : courses.length > 0 ? (
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4">
-              {courses.map((course) => (
+              {courses.map((course, index) => (
                 <Link 
                   key={course._id} 
                   href={`/courses/${course._id}`}
@@ -482,30 +494,48 @@ const BlinkHomePreview = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className={`h-44 ${course.bgColor} rounded-2xl relative p-4 cursor-pointer`}
+                    className={`h-44 rounded-2xl relative p-4 cursor-pointer bg-gradient-to-br ${
+                      courseGradients[index % courseGradients.length]
+                    } shadow-lg hover:shadow-xl transition-all duration-300`}
+                    whileHover={{ 
+                      scale: 1.02,
+                      transition: { duration: 0.2 }
+                    }}
                   >
-                    <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm text-white">
+                    {/* Progress Badge */}
+                    <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm text-white font-medium">
                       {course.progress}%
                     </div>
+
+                    {/* Delete Button */}
                     <button
                       onClick={(e) => handleDeleteCourse(course._id, e)}
-                      className="absolute top-2 right-2 p-2 bg-white/20 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 p-2 bg-white/20 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/30"
                     >
-                      <Trash2 className="w-4 h-4 text-white hover:text-red-500" />
+                      <Trash2 className="w-4 h-4 text-white hover:text-red-300" />
                     </button>
-                    <div className="absolute bottom-2 right-2 text-2xl">
+
+                    {/* Course Icon */}
+                    <div className="absolute bottom-2 right-2 text-2xl drop-shadow-lg">
                       {course.icon}
                     </div>
-                    <div className="absolute bottom-2 left-2 text-white font-medium text-sm">
-                      {course.title}
+
+                    {/* Course Title */}
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <h3 className="text-white font-medium text-sm drop-shadow-md line-clamp-2">
+                        {course.title}
+                      </h3>
                     </div>
+
+                    {/* Hover Effect Overlay */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 rounded-2xl" />
                   </motion.div>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="h-44 border-2 border-dashed border-gray-200 rounded-2xl flex items-center justify-center">
-              <p className="text-gray-500 text-center">
+            <div className="h-44 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+              <p className="text-gray-500 dark:text-gray-400 text-center">
                 No courses yet.<br />
                 Click the + button to create your first course!
               </p>
