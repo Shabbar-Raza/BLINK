@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { dbUtils } from '@/lib/db/mongodb';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GridFSBucket, ObjectId } from 'mongodb';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,15 +30,21 @@ async function generateNotes(content: string) {
 
 export async function GET(
   request: Request,
-  { params }: { params: { topicId: string } }
+  context: { params: { topicId: string } }
 ) {
   try {
-    const topicId = params.topicId.toString();
+    const topicId = context.params.topicId;
+    if (!topicId) {
+      return NextResponse.json({ error: 'Topic ID is required' }, { status: 400 });
+    }
+
     const topic = await dbUtils.getTopicById(topicId);
-    
     if (!topic) {
       return NextResponse.json({ error: 'Topic not found' }, { status: 404 });
     }
+
+    // Log the topic data to debug
+    console.log('Retrieved topic:', topic);
 
     // If notes haven't been generated yet and we have content
     if (!topic.generatedNotes && topic.content) {
@@ -57,10 +64,10 @@ export async function GET(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { topicId: string } }
+  context: { params: { topicId: string } }
 ) {
   try {
-    const topicId = params.topicId.toString();
+    const topicId = context.params.topicId;
     await dbUtils.deleteTopic(topicId);
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -127,6 +127,7 @@ export const dbUtils = {
     subtopics?: string[],
     fileType?: string,
     fileUrl?: string,
+    fileId?: string,
     created_at: Date
   }) => {
     try {
@@ -136,7 +137,9 @@ export const dbUtils = {
         courseId,
         ...topicData
       });
-      return result;
+      
+      // Return the complete inserted document
+      return await db.collection('topics').findOne({ _id: result.insertedId });
     } catch (error) {
       console.error('Error creating topic:', error);
       throw error;
@@ -231,5 +234,9 @@ export const dbUtils = {
       console.error('Error deleting topic:', error);
       throw error;
     }
+  },
+
+  getClient: async () => {
+    return await clientPromise;
   }
 }; 
