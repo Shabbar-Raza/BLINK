@@ -32,9 +32,11 @@
     "idb": "^8.0.2",
     "jspdf": "^3.0.0",
     "lucide-react": "^0.279.0",
+    "marked": "^15.0.11",
     "mongodb": "^6.16.0",
     "mongoose": "^8.10.1",
     "next": "^15.0.3",
+    "openai": "^4.98.0",
     "postcss": "^8.4.49",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.1.0",
@@ -48,6 +50,7 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "@types/react-native": "^0.72.8"
   }
 }

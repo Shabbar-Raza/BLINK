@@ -13,9 +13,26 @@ async function generateNotes(content: string) {
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
     
     const prompt = `
-      Create detailed study notes from the following content. 
-      Include key concepts, important points, and explanations.
-      Format the response in HTML with appropriate headings and sections.
+      Create detailed, well-structured study notes from the following content. 
+      Format the response in HTML with the following structure:
+      
+      1. Use <h2> for main topics
+      2. Use <h3> for subtopics
+      3. Use <ul> and <li> for bullet points
+      4. Use <p> for paragraphs
+      5. Use <strong> for important terms
+      6. Use <em> for emphasis
+      7. Use <div class="note-box"> for important notes or tips
+      8. Use <div class="key-concept"> for key concepts
+      
+      Include:
+      - Main topics and subtopics
+      - Key concepts and definitions
+      - Important points and examples
+      - Summary of main ideas
+      - Any relevant formulas or equations
+      
+      Make the notes visually appealing and easy to read.
       Content: ${content}
     `;
 
@@ -73,5 +90,31 @@ export async function DELETE(
   } catch (error) {
     console.error('Error deleting topic:', error);
     return NextResponse.json({ error: 'Failed to delete topic' }, { status: 500 });
+  }
+}
+
+export async function PUT(
+  req: Request,
+  { params }: { params: { topicId: string } }
+) {
+  try {
+    const { generatedNotes } = await req.json();
+    console.log('Updating topic with notes:', generatedNotes?.slice(0, 100));
+
+    // Here you would typically update your database
+    // For now, we'll just return a success response
+    return NextResponse.json({ 
+      success: true,
+      topic: {
+        _id: params.topicId,
+        generatedNotes
+      }
+    });
+  } catch (error) {
+    console.error('Error updating topic:', error);
+    return NextResponse.json(
+      { error: 'Failed to update topic' },
+      { status: 500 }
+    );
   }
 } 

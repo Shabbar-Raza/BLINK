@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { FileIcon } from 'lucide-react';
+import styles from '@/app/styles/notes.module.css';
+import { marked } from 'marked';
 
 interface TabButtonProps {
   active: boolean;
@@ -50,6 +52,9 @@ export default function TopicPage() {
   const [loading, setLoading] = useState(true);
   const [isRenaming, setIsRenaming] = useState(false);
   const [newTitle, setNewTitle] = useState('');
+  const [isGeneratingNotes, setIsGeneratingNotes] = useState(false);
+  const [documentText, setDocumentText] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchTopic = async () => {
@@ -95,8 +100,67 @@ export default function TopicPage() {
     }
   };
 
+  const handleGenerateNotes = async () => {
+    if (!documentText.trim()) {
+      setError('Please enter some text to generate notes from');
+      return;
+    }
+
+    if (!params?.topicId) {
+      setError('Topic ID is missing');
+      return;
+    }
+
+    setIsGeneratingNotes(true);
+    setError('');
+
+    try {
+      console.log('Sending request to generate notes...');
+      const response = await fetch('/api/notes/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ documentText }),
+      });
+
+      const data = await response.json();
+      console.log('Received response:', data);
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate notes');
+      }
+
+      // Update the topic with the generated notes
+      console.log('Updating topic with generated notes...');
+      const updateResponse = await fetch(`/api/topics/${params.topicId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ generatedNotes: data.notes }),
+      });
+
+      console.log('Update response status:', updateResponse.status);
+      if (updateResponse.ok) {
+        const updatedTopic = await updateResponse.json();
+        console.log('Updated topic:', updatedTopic);
+        setTopic(prev => prev ? { ...prev, generatedNotes: data.notes } : null);
+      } else {
+        throw new Error('Failed to update topic with generated notes');
+      }
+    } catch (error) {
+      console.error('Error in handleGenerateNotes:', error);
+      setError(error instanceof Error ? error.message : 'Failed to generate notes');
+    } finally {
+      setIsGeneratingNotes(false);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!topic) return <div>Topic not found</div>;
+
+  const renderedNotes = topic.generatedNotes ? marked.parse(topic.generatedNotes) : 'No notes available yet. Enter text above to generate notes.';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -236,7 +300,40 @@ export default function TopicPage() {
             <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Study Notes
             </h2>
-            <div dangerouslySetInnerHTML={{ __html: topic.generatedNotes || 'No notes available yet.' }} />
+            
+            {!topic.generatedNotes && (
+              <div className="mb-6">
+                <textarea
+                  value={documentText}
+                  onChange={(e) => setDocumentText(e.target.value)}
+                  placeholder="Enter or paste your document text here..."
+                  className={`w-full h-48 p-4 rounded-lg border ${
+                    isDarkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300'
+                  }`}
+                />
+                {error && (
+                  <p className="text-red-500 mt-2">{error}</p>
+                )}
+                <button
+                  onClick={handleGenerateNotes}
+                  disabled={isGeneratingNotes}
+                  className={`mt-4 px-4 py-2 rounded-lg ${
+                    isGeneratingNotes
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-purple-600 hover:bg-purple-700'
+                  } text-white`}
+                >
+                  {isGeneratingNotes ? 'Generating Notes...' : 'Generate Notes'}
+                </button>
+              </div>
+            )}
+            
+            <div
+              className={`${styles.notesContainer} ${styles.notesContent} ${isDarkMode ? 'dark' : ''}`}
+              dangerouslySetInnerHTML={{ __html: renderedNotes }}
+            />
           </div>
         )}
         
@@ -253,4 +350,4 @@ export default function TopicPage() {
       </main>
     </div>
   );
-} 
+}
