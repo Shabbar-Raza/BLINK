@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, BookOpen, ArrowLeft, Upload, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface Topic {
@@ -21,7 +21,9 @@ interface Course {
   topics: Topic[];
 }
 
-export default function CourseDetail({ params }: { params: { courseId: string } }) {
+export default function CourseDetail() {
+  const params = useParams();
+  const courseId = React.use(params).courseId;
   const { isDarkMode } = useTheme();
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
@@ -32,9 +34,11 @@ export default function CourseDetail({ params }: { params: { courseId: string } 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await fetch(`/api/courses/${params.courseId}`);
+        const response = await fetch(`/api/courses/${courseId}`);
         const data = await response.json();
-        setCourse(data.course);
+        if (data.course) {
+          setCourse(data.course);
+        }
       } catch (error) {
         console.error('Error fetching course:', error);
       } finally {
@@ -42,12 +46,14 @@ export default function CourseDetail({ params }: { params: { courseId: string } 
       }
     };
 
-    fetchCourse();
-  }, [params.courseId]);
+    if (courseId) {
+      fetchCourse();
+    }
+  }, [courseId]);
 
   const refreshCourse = async () => {
     try {
-      const response = await fetch(`/api/courses/${params.courseId}`);
+      const response = await fetch(`/api/courses/${courseId}`);
       const data = await response.json();
       setCourse(data.course);
     } catch (error) {
@@ -61,7 +67,7 @@ export default function CourseDetail({ params }: { params: { courseId: string } 
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('courseId', params.courseId);
+    formData.append('courseId', courseId);
 
     try {
       const response = await fetch('/api/topics/upload', {
@@ -86,7 +92,7 @@ export default function CourseDetail({ params }: { params: { courseId: string } 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          courseId: params.courseId,
+          courseId: courseId,
           title: newTopicTitle,
           subtopics: []
         }),

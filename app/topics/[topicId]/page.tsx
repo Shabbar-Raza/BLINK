@@ -42,19 +42,37 @@ interface Topic {
   fileUrl?: string;
   fileType?: string;
   generatedNotes?: string;
+  fileId?: string;
 }
+
+const isProcessableFileType = (fileType: string): boolean => {
+  const type = fileType.toLowerCase();
+  return (
+    type.includes('pdf') ||
+    type.includes('doc') ||
+    type.includes('docx') ||
+    type.includes('txt') ||
+    type.includes('csv') ||
+    type.includes('xls') ||
+    type.includes('xlsx') ||
+    type.includes('ppt') ||
+    type.includes('pptx') ||
+    type.includes('html')
+  );
+};
 
 export default function TopicPage() {
   const params = useParams();
   const { isDarkMode } = useTheme();
   const [topic, setTopic] = useState<Topic | null>(null);
-  const [activeTab, setActiveTab] = useState('view');
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('notes');
   const [isRenaming, setIsRenaming] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [isGeneratingNotes, setIsGeneratingNotes] = useState(false);
   const [documentText, setDocumentText] = useState('');
   const [error, setError] = useState('');
+  const [isPdfProcessing, setIsPdfProcessing] = useState(false);
 
   useEffect(() => {
     const fetchTopic = async () => {
@@ -106,61 +124,106 @@ export default function TopicPage() {
       return;
     }
 
-    if (!params?.topicId) {
-      setError('Topic ID is missing');
-      return;
-    }
-
     setIsGeneratingNotes(true);
     setError('');
 
     try {
-      console.log('Sending request to generate notes...');
-      const response = await fetch('/api/notes/generate', {
+      const response = await fetch(`/api/topics/${topic?._id}/generate-notes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ documentText }),
+        body: JSON.stringify({ documentText })
       });
-
-      const data = await response.json();
-      console.log('Received response:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate notes');
+        throw new Error('Failed to generate notes');
       }
 
-      // Update the topic with the generated notes
-      console.log('Updating topic with generated notes...');
-      const updateResponse = await fetch(`/api/topics/${params.topicId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ generatedNotes: data.notes }),
-      });
-
-      console.log('Update response status:', updateResponse.status);
-      if (updateResponse.ok) {
-        const updatedTopic = await updateResponse.json();
-        console.log('Updated topic:', updatedTopic);
-        setTopic(prev => prev ? { ...prev, generatedNotes: data.notes } : null);
-      } else {
-        throw new Error('Failed to update topic with generated notes');
-      }
+      const { notes } = await response.json();
+      setTopic(prev => prev ? { ...prev, generatedNotes: notes } : null);
+      setDocumentText('');
     } catch (error) {
-      console.error('Error in handleGenerateNotes:', error);
+      console.error('Error generating notes:', error);
       setError(error instanceof Error ? error.message : 'Failed to generate notes');
     } finally {
       setIsGeneratingNotes(false);
     }
   };
 
+  const handleGenerateNotesFromPdf = async () => {
+    if (!topic?.fileId) {
+      setError('No file found');
+      return;
+    }
+
+    setIsPdfProcessing(true);
+    setError('');
+
+    try {
+      // 1. Fetch the file from our database
+      const fileResponse = await fetch(`/api/files/${topic.fileId}`);
+      if (!fileResponse.ok) {
+        throw new Error('Failed to fetch file');
+      }
+      
+      const fileData = await fileResponse.json();
+      
+      // Convert base64 back to Blob
+      const binaryString = atob(fileData.data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const fileBlob = new Blob([bytes], { type: fileData.contentType });
+
+      // 2. Extract text using local FastAPI endpoint
+      const formData = new FormData();
+      formData.append('file', fileBlob, fileData.filename);
+
+      const extractResponse = await fetch('http://localhost:8000/extract-text/', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!extractResponse.ok) {
+        throw new Error('Failed to extract text from document');
+      }
+
+      const { text: extractedText } = await extractResponse.json();
+
+      if (!extractedText) {
+        throw new Error('No text could be extracted from the document');
+      }
+
+      // 3. Generate notes using OpenAI
+      const notesResponse = await fetch(`/api/topics/${topic._id}/generate-notes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ documentText: extractedText })
+      });
+
+      if (!notesResponse.ok) {
+        throw new Error('Failed to generate notes');
+      }
+
+      const { notes } = await notesResponse.json();
+      setTopic(prev => prev ? { ...prev, generatedNotes: notes } : null);
+
+    } catch (error) {
+      console.error('Error processing document:', error);
+      setError(error instanceof Error ? error.message : 'Failed to process document');
+    } finally {
+      setIsPdfProcessing(false);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!topic) return <div>Topic not found</div>;
 
-  const renderedNotes = topic.generatedNotes ? marked.parse(topic.generatedNotes) : 'No notes available yet. Enter text above to generate notes.';
+  const renderedNotes = topic.generatedNotes ? String(marked.parse(topic.generatedNotes)) : 'No notes available yet. Enter text above to generate notes.';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -297,10 +360,44 @@ export default function TopicPage() {
         
         {activeTab === 'notes' && (
           <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-sm`}>
-            <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Study Notes
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                Study Notes
+              </h2>
+              <div className="flex gap-2">
+                {topic.fileType && isProcessableFileType(topic.fileType) && (
+                  <button
+                    onClick={handleGenerateNotesFromPdf}
+                    disabled={isPdfProcessing}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      isPdfProcessing
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    } text-white`}
+                  >
+                    {isPdfProcessing ? 'Processing Document...' : 'Generate Notes from Document'}
+                  </button>
+                )}
+                {!topic.generatedNotes && (
+                  <button
+                    onClick={handleGenerateNotes}
+                    disabled={isGeneratingNotes}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      isGeneratingNotes
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-purple-600 hover:bg-purple-700'
+                    } text-white`}
+                  >
+                    {isGeneratingNotes ? 'Generating...' : 'Generate Notes'}
+                  </button>
+                )}
+              </div>
+            </div>
             
+            {error && (
+              <p className="text-red-500 mb-4">{error}</p>
+            )}
+
             {!topic.generatedNotes && (
               <div className="mb-6">
                 <textarea
@@ -313,20 +410,6 @@ export default function TopicPage() {
                       : 'bg-white border-gray-300'
                   }`}
                 />
-                {error && (
-                  <p className="text-red-500 mt-2">{error}</p>
-                )}
-                <button
-                  onClick={handleGenerateNotes}
-                  disabled={isGeneratingNotes}
-                  className={`mt-4 px-4 py-2 rounded-lg ${
-                    isGeneratingNotes
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-purple-600 hover:bg-purple-700'
-                  } text-white`}
-                >
-                  {isGeneratingNotes ? 'Generating Notes...' : 'Generate Notes'}
-                </button>
               </div>
             )}
             
