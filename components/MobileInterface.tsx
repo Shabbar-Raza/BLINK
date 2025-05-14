@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Plus, UserCircle, X } from 'lucide-react';
+import { Home, Plus, UserCircle, X, Activity, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 
 const MobileInterface = () => {
@@ -79,8 +79,8 @@ const MobileInterface = () => {
           <Link href="/create">
             <Plus className="h-6 w-6" />
           </Link>
-          <Link href="/profile">
-            <UserCircle className="h-6 w-6" />
+          <Link href="/dashboard">
+            <BarChart3 className="h-6 w-6" />
           </Link>
         </div>
       </div>

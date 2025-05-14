@@ -1,6 +1,7 @@
 import { MongoClient, Document, UpdateFilter } from 'mongodb';
 import { ObjectId } from 'mongodb';
-import { Topic, SavedNote } from '@/app/types';
+import { Topic } from '@/app/types';
+import { QuizAttempt } from '@/app/types';
 
 if (!process.env.MONGODB_URI) {
   throw new Error('Please add your Mongo URI to .env.local');
@@ -186,13 +187,13 @@ export const dbUtils = {
     }
   },
 
-  getTopicById: async (topicId: string) => {
+  getTopicById: async (topicId: string): Promise<Topic | null> => {
     try {
       const client = await clientPromise;
       const db = client.db();
       return await db.collection('topics').findOne({ 
         _id: new ObjectId(topicId) 
-      });
+      }) as Topic | null;
     } catch (error) {
       console.error('Error fetching topic:', error);
       throw error;
@@ -378,6 +379,67 @@ export const dbUtils = {
       return result;
     } catch (error) {
       console.error('Error deleting topic note:', error);
+      throw error;
+    }
+  },
+
+  updateTopic: async (topicId: string, updateData: Partial<Topic>) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      return await db.collection('topics').updateOne(
+        { _id: new ObjectId(topicId) },
+        { $set: updateData }
+      );
+    } catch (error) {
+      console.error('Error updating topic:', error);
+      throw error;
+    }
+  },
+
+  saveQuizAttempt: async (topicId: string, quizAttempt: QuizAttempt) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      await db.collection('topics').updateOne(
+        { _id: new ObjectId(topicId) },
+        { 
+          $push: { 
+            quizAttempts: quizAttempt 
+          }
+        } as unknown as UpdateFilter<Document>
+      );
+      return quizAttempt;
+    } catch (error) {
+      console.error('Error saving quiz attempt:', error);
+      throw error;
+    }
+  },
+
+  getQuizAttempts: async (topicId: string): Promise<QuizAttempt[]> => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const topic = await db.collection('topics').findOne(
+        { _id: new ObjectId(topicId) },
+        { projection: { quizAttempts: 1 } }
+      );
+      return topic?.quizAttempts || [];
+    } catch (error) {
+      console.error('Error getting quiz attempts:', error);
+      throw error;
+    }
+  },
+
+  getAllTopics: async () => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      return await db.collection('topics')
+        .find({})
+        .toArray();
+    } catch (error) {
+      console.error('Error fetching all topics:', error);
       throw error;
     }
   },

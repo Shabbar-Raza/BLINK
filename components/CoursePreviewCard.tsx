@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Plus, UserCircle, X } from 'lucide-react';
+import { Home, Plus, UserCircle, X, Activity } from 'lucide-react';
 import CoursePreviewCard from './CoursePreviewCard';
 import Link from 'next/link';
 
@@ -85,8 +85,8 @@ const MobileInterface = () => {
         <Link href="/create">
           <Plus className="h-6 w-6" />
         </Link>
-        <Link href="/profile">
-          <UserCircle className="h-6 w-6" />
+        <Link href="/quiz-analytics">
+          <Activity className="h-6 w-6" />
         </Link>
       </div>
     </div>

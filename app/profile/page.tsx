@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Trophy, Target, BookOpen, BrainCircuit } from 'lucide-react';
+import { ArrowLeft, Clock, Trophy, Target, BookOpen, BrainCircuit, LineChart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Profile() {
   const router = useRouter();
@@ -56,15 +57,25 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header - Fixed back button */}
-      <div className="sticky top-0 bg-white border-b px-3 py-3 flex items-center">
+      <div className="sticky top-0 bg-white border-b px-3 py-3 flex items-center justify-between">
+        <div className="flex items-center">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => router.push('/')}
+            className="mr-3"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </motion.button>
+          <h1 className="text-lg font-semibold">My Profile</h1>
+        </div>
         <motion.button
           whileTap={{ scale: 0.95 }}
-          onClick={() => router.push('/')}
-          className="mr-3"
+          onClick={() => router.push('/quiz-analytics')}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-200 transition-colors"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <LineChart className="h-4 w-4" />
+          <span className="text-sm font-medium">Quiz Analytics</span>
         </motion.button>
-        <h1 className="text-lg font-semibold">My Profile</h1>
       </div>
 
       {/* Profile Content - Adjusted padding */}

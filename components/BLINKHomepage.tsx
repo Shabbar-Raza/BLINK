@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Moon, Sun, Menu, LogOut, Settings, User, AlertTriangle, Heart, Activity, HelpCircle, Upload, Trash2 } from 'lucide-react';
+import { Moon, Sun, Menu, LogOut, Settings, User, AlertTriangle, Heart, Activity, HelpCircle, Upload, Trash2, BarChart3 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Archivo_Black } from 'next/font/google';
 import Image from 'next/image';
@@ -277,7 +277,7 @@ const BlinkHomePreview = () => {
               className="p-4 space-y-2"
             >
               {[
-                { href: '/profile', icon: <User />, label: 'Profile' },
+                { href: '/dashboard', icon: <BarChart3 />, label: 'Dashboard' },
                 { href: '/settings', icon: <Settings />, label: 'Settings' },
                 { href: '/help', icon: <HelpCircle />, label: 'Help & Support' },
               ].map((item, index) => (

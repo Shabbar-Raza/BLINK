@@ -9,6 +9,7 @@ import { FileIcon } from 'lucide-react';
 import styles from '@/app/styles/notes.module.css';
 import { marked } from 'marked';
 import { SavedNote } from '@/app/types';
+import Quiz from '@/app/components/Quiz';
 
 interface TabButtonProps {
   active: boolean;
@@ -687,12 +688,14 @@ export default function TopicPage() {
         
         {activeTab === 'quiz' && (
           <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-sm`}>
-            <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h2 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Quiz
             </h2>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              Start Quiz
-            </button>
+            <Quiz 
+              topicContent={topic?.content || ''} 
+              isDarkMode={isDarkMode}
+              topicId={topic?._id || ''}
+            />
           </div>
         )}
       </main>
