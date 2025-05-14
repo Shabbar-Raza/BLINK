@@ -1,5 +1,6 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, Document, UpdateFilter } from 'mongodb';
 import { ObjectId } from 'mongodb';
+import { Topic, SavedNote } from '@/app/types';
 
 if (!process.env.MONGODB_URI) {
   throw new Error('Please add your Mongo URI to .env.local');
@@ -262,6 +263,121 @@ export const dbUtils = {
       return result;
     } catch (error) {
       console.error('Error updating topic content:', error);
+      throw error;
+    }
+  },
+
+  saveGeneratedNotes: async (topicId: string, notes: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const result = await db.collection('topics').updateOne(
+        { _id: new ObjectId(topicId) },
+        { 
+          $set: { generatedNotes: notes },
+          $push: { 
+            savedNotes: {
+              id: new ObjectId().toString(),
+              content: notes,
+              timestamp: new Date()
+            }
+          }
+        } as any
+      );
+      return result;
+    } catch (error) {
+      console.error('Error saving generated notes:', error);
+      throw error;
+    }
+  },
+
+  getSavedNotes: async (topicId: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const topic = await db.collection('topics').findOne(
+        { _id: new ObjectId(topicId) },
+        { projection: { savedNotes: 1 } }
+      );
+      return topic?.savedNotes || [];
+    } catch (error) {
+      console.error('Error getting saved notes:', error);
+      throw error;
+    }
+  },
+
+  deleteNote: async (topicId: string, noteId: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const result = await db.collection('topics').updateOne(
+        { _id: new ObjectId(topicId) },
+        { $pull: { savedNotes: { id: noteId } } } as any
+      );
+      return result;
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      throw error;
+    }
+  },
+
+  addTopicNote: async (topicId: string, noteContent: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      
+      // Get current notes count for versioning
+      const topic = await db.collection('topics').findOne(
+        { _id: new ObjectId(topicId) }
+      );
+      const currentNotes = topic?.notes || [];
+      const newVersion = currentNotes.length + 1;
+      
+      const newNote = {
+        id: new ObjectId().toString(),
+        content: noteContent,
+        timestamp: new Date(),
+        version: newVersion
+      };
+
+      const result = await db.collection('topics').updateOne(
+        { _id: new ObjectId(topicId) },
+        { $push: { notes: newNote } } as any
+      );
+
+      return { success: true, note: newNote };
+    } catch (error) {
+      console.error('Error adding topic note:', error);
+      throw error;
+    }
+  },
+
+  getTopicNotes: async (topicId: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const topic = await db.collection('topics').findOne(
+        { _id: new ObjectId(topicId) },
+        { projection: { notes: 1 } }
+      );
+      return topic?.notes || [];
+    } catch (error) {
+      console.error('Error getting topic notes:', error);
+      throw error;
+    }
+  },
+
+  deleteTopicNote: async (topicId: string, noteId: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const result = await db.collection('topics').updateOne(
+        { _id: new ObjectId(topicId) },
+        { $pull: { notes: { id: noteId } } } as any
+      );
+      return result;
+    } catch (error) {
+      console.error('Error deleting topic note:', error);
       throw error;
     }
   },

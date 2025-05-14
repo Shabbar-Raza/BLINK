@@ -4,6 +4,12 @@ export interface Message {
   timestamp: Date;
 }
 
+export interface SavedNote {
+  id: string;
+  content: string;
+  timestamp: Date;
+}
+
 export interface Topic {
   _id: string;
   title: string;
@@ -12,6 +18,7 @@ export interface Topic {
   fileType?: string;
   content?: string;
   generatedNotes?: string;
+  savedNotes?: SavedNote[];
   chatHistory?: Message[];
   created_at: Date;
 }
