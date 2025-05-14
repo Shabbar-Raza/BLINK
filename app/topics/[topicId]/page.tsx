@@ -196,6 +196,19 @@ export default function TopicPage() {
         throw new Error('No text could be extracted from the document');
       }
 
+      // Store the extracted content
+      const contentResponse = await fetch(`/api/topics/${topic._id}/content`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: extractedText })
+      });
+
+      if (!contentResponse.ok) {
+        throw new Error('Failed to store extracted content');
+      }
+
       // 3. Generate notes using OpenAI
       const notesResponse = await fetch(`/api/topics/${topic._id}/generate-notes`, {
         method: 'POST',

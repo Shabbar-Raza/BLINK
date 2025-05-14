@@ -251,6 +251,21 @@ export const dbUtils = {
     }
   },
 
+  updateTopicContent: async (topicId: string, content: string) => {
+    try {
+      const client = await clientPromise;
+      const db = client.db();
+      const result = await db.collection('topics').updateOne(
+        { _id: new ObjectId(topicId) },
+        { $set: { content } }
+      );
+      return result;
+    } catch (error) {
+      console.error('Error updating topic content:', error);
+      throw error;
+    }
+  },
+
   getClient: async () => {
     return await clientPromise;
   }

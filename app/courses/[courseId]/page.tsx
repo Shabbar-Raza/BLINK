@@ -23,7 +23,7 @@ interface Course {
 
 export default function CourseDetail() {
   const params = useParams();
-  const courseId = React.use(params).courseId;
+  const courseId = (params?.courseId as string) || '';
   const { isDarkMode } = useTheme();
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
